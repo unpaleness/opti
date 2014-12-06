@@ -31,6 +31,7 @@ public:
     double maxz();
     double minz();
     int N();
+    int N2();
     void countPlot();
     bool isCounted();
 

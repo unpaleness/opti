@@ -41,6 +41,7 @@ double Calc::miny() { return _min_y; }
 double Calc::maxz() { return _max_z; }
 double Calc::minz() { return _min_z; }
 int Calc::N() { return _N; }
+int Calc::N2() { return _N * _N; }
 
 void Calc::setN(int newN)
 {
