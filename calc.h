@@ -2,13 +2,13 @@
 #define CALC_H
 
 #define MEMBERS 3
-#define POINTS 41
+#define POINTS 101
 #define MINPOINTS 11
 #define MAXPOINTS 81
-#define MINX -10.0
-#define MAXX 10.0
-#define MINY -10.0
-#define MAXY 10.0
+#define MINX -4.0
+#define MAXX 4.0
+#define MINY -4.0
+#define MAXY 4.0
 
 #include <cmath>
 
@@ -24,42 +24,29 @@ public:
     double *x();
     double *y();
     double **z();
-    double maxx();
-    double minx();
-    double maxy();
-    double miny();
-    double maxz();
-    double minz();
+    double max(int);
+    double min(int);
     int N();
     int N2();
     void countPlot();
     bool isCounted();
 
     void setN(int);
-    void setMinX(int);
-    void setMaxX(int);
-    void setMinY(int);
-    void setMaxY(int);
+    void setMin(int, int);
+    void setMax(int, int);
 
 private:
-    bool
-      _is_counted;
-    int
-      _N; //points on axises
-    double
-      *_a, //coefficients
-      *_powx, //x powers
-      *_powy, //y powers
-      /* displaying variables */
-      _max_x,
-      _min_x,
-      _max_y,
-      _min_y,
-      _max_z,
-      _min_z,
-      *_axis_x, //values on axis x
-      *_axis_y, //values on axis y
-      ** _z_plot; //values of function to plot
+    bool _is_counted;
+    int _N; //points on axises
+    double *_a; //coefficients
+    double *_powx; //x powers
+    double *_powy; //y powers
+    /* displaying variables */
+    double _max[3];
+    double _min[3];
+    double *_axis_x; //values on axis x
+    double *_axis_y; //values on axis y
+    double ** _z_plot; //values of function to plot
 
     void _initialize(); //initialize plotting arrays
     void _eraseinitialization(); //erase memory after plotting arrays

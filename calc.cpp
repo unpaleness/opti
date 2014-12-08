@@ -12,12 +12,12 @@ Calc::Calc()
   _memalloc(MEMBERS, _powy);
   _initialize();
   _is_counted = false;
-  _max_x = MAXX;
-  _min_x = MINX;
-  _max_y = MAXY;
-  _min_y = MINY;
-  _max_z = 0;
-  _min_z = 0;
+  _max[0] = MAXX;
+  _min[0] = MINX;
+  _max[1] = MAXY;
+  _min[1] = MINY;
+  _max[2] = 0;
+  _min[2] = 0;
 }
 
 Calc::~Calc()
@@ -34,12 +34,8 @@ double &Calc::powy(int index) { return _powy[index]; }
 double *Calc::x() { return _axis_x; }
 double *Calc::y() { return _axis_y; }
 double **Calc::z() { return _z_plot; }
-double Calc::maxx() { return _max_x; }
-double Calc::minx() { return _min_x; }
-double Calc::maxy() { return _max_y; }
-double Calc::miny() { return _min_y; }
-double Calc::maxz() { return _max_z; }
-double Calc::minz() { return _min_z; }
+double Calc::max(int i) { return _max[i]; }
+double Calc::min(int i) { return _min[i]; }
 int Calc::N() { return _N; }
 int Calc::N2() { return _N * _N; }
 
@@ -51,10 +47,8 @@ void Calc::setN(int newN)
   _countplot();
 }
 
-void Calc::setMaxX(int maxx) { _max_x = maxx; }
-void Calc::setMinX(int minx) { _min_x = minx; }
-void Calc::setMaxY(int maxy) { _max_y = maxy; }
-void Calc::setMinY(int miny) { _min_y = miny; }
+void Calc::setMax(int i, int max) { _max[i] = max; }
+void Calc::setMin(int i, int min) { _min[i] = min; }
 
 void Calc::countPlot()
 {
@@ -92,10 +86,10 @@ double Calc::_fun(double y, double x)
 void Calc::_countplot()
 {
   double
-    dx = (_max_x - _min_x) / (_N - 1),
-    dy = (_max_x - _min_y) / (_N - 1);
-  _axis_x[0] = _min_x;
-  _axis_y[0] = _min_y;
+    dx = (_max[0] - _min[0]) / (_N - 1),
+    dy = (_max[1] - _min[1]) / (_N - 1);
+  _axis_x[0] = _min[0];
+  _axis_y[0] = _min[1];
   for(int i = 1; i < _N; i++)
   {
     _axis_x[i] = _axis_x[i-1] + dx;
@@ -105,8 +99,8 @@ void Calc::_countplot()
     for(int i = 0; i < _N; i++)
     {
       _z_plot[j][i] = _fun(_axis_y[j], _axis_x[i]);
-      if(_z_plot[j][i] > _max_z) _max_z = _z_plot[j][i];
-      if(_z_plot[j][i] < _min_z) _min_z = _z_plot[j][i];
+      if(_z_plot[j][i] > _max[2]) _max[2] = _z_plot[j][i];
+      if(_z_plot[j][i] < _min[2]) _min[2] = _z_plot[j][i];
     }
 }
 
