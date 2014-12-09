@@ -4,7 +4,6 @@
 #include <QPoint>
 #include <QMouseEvent>
 #include <QGLWidget>
-//#include <QtOpenGL>
 
 #define ROLL_STEP 5
 #define MIN_EYE_DISTANCE_X -400
@@ -39,8 +38,8 @@ public:
   void wheelEvent(QWheelEvent *); // on wheel roll
   void keyPressEvent(QKeyEvent *); //on pressing keyboard
 
-  void mainform(MW *); //main form connecting
-  void calcobject(Calc *); //calc object connecting
+  void setMainForm(MW *); //main form connecting
+  void setCalc(Calc *); //calc object connecting
 
 private:
   Ui::GW *_gw; //graphic form (this)
@@ -55,6 +54,7 @@ private:
   int _windowHeight; //window height
   QPoint _lastPos;
   GLdouble **_pg; //points of graphic
+  GLdouble **_po; //point of optimization
   GLdouble _pa[6][3]; //points of axises
   GLdouble _eyePosition[3]; //eye position o_O
   GLdouble **_normales; //normales to faces
@@ -77,7 +77,8 @@ private:
   void _paintPoints(); //paints points
   void _paintLines(); //paints lines
   void _paintFaces(); //paints faces
-  void _countNormale(GLdouble *, GLdouble *, GLdouble *, GLdouble *,
+  void _paintOptimization(); //paints optimization proccess
+  void _countNormale4(GLdouble *, GLdouble *, GLdouble *, GLdouble *,
                      GLdouble *);
 };
 

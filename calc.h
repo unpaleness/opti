@@ -1,16 +1,18 @@
 #ifndef CALC_H
 #define CALC_H
 
+#include <cmath>
+
+#include "simplex.h"
+
 #define MEMBERS 3
 #define POINTS 101
-#define MINPOINTS 11
-#define MAXPOINTS 81
-#define MINX -4.0
-#define MAXX 4.0
-#define MINY -4.0
-#define MAXY 4.0
+#define MINX -10.0
+#define MAXX 10.0
+#define MINY -10.0
+#define MAXY 10.0
 
-#include <cmath>
+//class Simplex;
 
 class Calc
 {
@@ -24,19 +26,23 @@ public:
     double *x();
     double *y();
     double **z();
+    double z(double, double);
     double max(int);
     double min(int);
     int N();
     int N2();
-    void countPlot();
+    void countPlot(); //count plot for illustration
+    void optimize(int); //optimize with seleceted method
     bool isCounted();
-
-    void setN(int);
+    Simplex *simplex();
     void setMin(int, int);
     void setMax(int, int);
 
 private:
-    bool _is_counted;
+    Simplex *_simplex; //simplex-method object
+
+    bool _isCounted;
+    int _extremum; //type of extermum
     int _N; //points on axises
     double *_a; //coefficients
     double *_powx; //x powers
@@ -51,7 +57,7 @@ private:
     void _initialize(); //initialize plotting arrays
     void _eraseinitialization(); //erase memory after plotting arrays
     double _fun(double, double);
-    void _countplot();
+    void _countPlot();
     template <class AnyClass>
     void _memalloc(int, AnyClass *&);
     template <class AnyClass>

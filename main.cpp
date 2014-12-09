@@ -9,10 +9,10 @@ int main(int argc, char *argv[])
     Calc calc;
     GW g;
     MW w;
-    w.calcobject(&calc);
-    g.calcobject(&calc);
-    w.graphicform(&g);
-    g.mainform(&w);
+    w.setCalc(&calc);
+    g.setCalc(&calc);
+    w.setGraphicForm(&g);
+    g.setMainForm(&w);
     w.show();
 
     return a.exec();

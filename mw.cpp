@@ -9,7 +9,9 @@
 
 MW::MW(QMainWindow *parent) : QMainWindow(parent), _mw(new Ui::MW)
 {
-    _mw->setupUi(this);
+  _method = 0;
+  _mw->setupUi(this);
+  _mw->cbMethod->setCurrentIndex(_method);
 }
 
 MW::~MW()
@@ -17,9 +19,11 @@ MW::~MW()
   delete _mw;
 }
 
-void MW::calcobject(Calc *calc) { _calc = calc; }
+void MW::setCalc(Calc *calc) { _calc = calc; }
 
-void MW::graphicform(GW *gw) { _gw = gw; }
+void MW::setGraphicForm(GW *gw) { _gw = gw; }
+
+int MW::method() { return _method; }
 
 /*
  * PRIVATE
@@ -60,6 +64,8 @@ void MW::on_pbexec_clicked()
     _updateParams();
     _mw->lestatus->setText(str);
     _calc->countPlot();
+    _calc->optimize(_mw->cbMethod->currentIndex());
+    _mw->lestatus->setText(QString::number(_calc->simplex()->nSimplex()));
 }
 
 void MW::on_pbgraph_clicked()
@@ -73,4 +79,9 @@ void MW::on_pbgraph_clicked()
   {
     _mw->lestatus->setText("График не рассчитан.");
   }
+}
+
+void MW::on_cbMethod_currentIndexChanged(int index)
+{
+  _method = index;
 }

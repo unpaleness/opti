@@ -1,3 +1,4 @@
+//#include "simplex.h"
 #include "calc.h"
 
 /*
@@ -11,13 +12,15 @@ Calc::Calc()
   _memalloc(MEMBERS, _powx);
   _memalloc(MEMBERS, _powy);
   _initialize();
-  _is_counted = false;
+  _isCounted = false;
   _max[0] = MAXX;
   _min[0] = MINX;
   _max[1] = MAXY;
   _min[1] = MINY;
   _max[2] = 0;
   _min[2] = 0;
+  _simplex = new Simplex;
+  _simplex->setCalc(this);
 }
 
 Calc::~Calc()
@@ -26,6 +29,7 @@ Calc::~Calc()
   _memerase(_powx);
   _memerase(_powy);
   _eraseinitialization();
+  delete _simplex;
 }
 
 double &Calc::a(int index) { return _a[index]; }
@@ -34,29 +38,35 @@ double &Calc::powy(int index) { return _powy[index]; }
 double *Calc::x() { return _axis_x; }
 double *Calc::y() { return _axis_y; }
 double **Calc::z() { return _z_plot; }
+double Calc::z(double x, double y) { return _fun(y, x); }
 double Calc::max(int i) { return _max[i]; }
 double Calc::min(int i) { return _min[i]; }
 int Calc::N() { return _N; }
 int Calc::N2() { return _N * _N; }
-
-void Calc::setN(int newN)
-{
-  _eraseinitialization();
-  _N = newN;
-  _initialize();
-  _countplot();
-}
-
+Simplex *Calc::simplex() { return _simplex; }
 void Calc::setMax(int i, int max) { _max[i] = max; }
 void Calc::setMin(int i, int min) { _min[i] = min; }
 
 void Calc::countPlot()
 {
-  _countplot();
-  _is_counted = true;
+  _countPlot();
+  _isCounted = true;
 }
 
-bool Calc::isCounted() { return _is_counted; }
+//0 - Simplex (Nelder-Mid)
+void Calc::optimize(int method)
+{
+  switch(method)
+  {
+    case 0:
+      _simplex->countSimpex(_extremum);
+      break;
+    default:
+      break;
+  }
+}
+
+bool Calc::isCounted() { return _isCounted; }
 
 /*
  * PRIVATE
@@ -83,7 +93,7 @@ double Calc::_fun(double y, double x)
             _a[2] * pow(x, _powx[2]) * pow(y, _powy[2]);
 }
 
-void Calc::_countplot()
+void Calc::_countPlot()
 {
   double
     dx = (_max[0] - _min[0]) / (_N - 1),
@@ -115,7 +125,7 @@ void Calc::_memalloc(int dim1, int dim2, AnyClass **&mat)
 {
   mat = new AnyClass *[dim1];
   for(int i = 0; i < dim1; i++)
-    mat[i] = new AnyClass[dim2];
+    mat[i] = new AnyClass [dim2];
 }
 
 template <class AnyClass>

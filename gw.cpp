@@ -19,7 +19,17 @@ GW::GW(QGLWidget *parent) : QGLWidget(parent), _gw(new Ui::GW)
 GW::~GW()
 {
   if(_isInitialized) //delete arrays only if they were initialized
+  {
     _eraseArrays();
+    switch(_mw->method())
+    {
+      case 0: //simplex
+        _memfree(_calc->simplex()->nSimplex() * 3, _po);
+        break;
+      default:
+        break;
+    }
+  }
   delete _gw;
 }
 
@@ -36,7 +46,8 @@ void GW::initializeGL()
   static GLfloat lightPosition[4] = { 2.0, 2.0, 1.0, 0.0 };
   static GLfloat lightDiffuse[4] = { 1.0, 1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-  glLightfv(GL_LIGHT0, GL_AMBIENT, lightDiffuse);
+//  glLightfv(GL_LIGHT0, GL_AMBIENT, lightDiffuse);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 }
 
 void GW::resizeGL(int w, int h)
@@ -60,25 +71,43 @@ void GW::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity(); //загружаем матрицу
+//  if(_isNormilizedZ)
+//    glScaled(1.0, 1.0, 0.1);
   glTranslated(_eyePosition[0], _eyePosition[1], _eyePosition[2]);
-  if(_isNormilizedZ)
-    glScaled(1.0, 1.0, _coefZ);
   glRotated(_rot[0] / 16.0, 1.0, 0.0, 0.0);
   glRotated(_rot[1] / 16.0, 0.0, 1.0, 0.0);
   glRotated(_rot[2] / 16.0, 0.0, 0.0, 1.0);
   switch(_graphView)
   {
-    case 1: _paintLines(); break;
-    case 2: _paintFaces(); break;
-    default: _paintPoints(); break;
+    case 1:
+      _paintLines();
+      break;
+    case 2:
+      _paintFaces();
+      break;
+    default:
+      _paintPoints();
+      break;
   }
   _paintAxises();
+  _paintOptimization();
+//  glFlush();
 }
 
 void GW::showEvent(QShowEvent *)
 {
   if(!_isInitialized)
+  {
     _initializeArrays();
+    switch(_mw->method())
+    {
+      case 0: //simplex
+        _memalloc(_calc->simplex()->nSimplex() * 3, 3, _po);
+        break;
+      default:
+        break;
+    }
+  }
   _setPoints();
 //  updateGL();
 }
@@ -86,6 +115,14 @@ void GW::showEvent(QShowEvent *)
 void GW::closeEvent(QCloseEvent *)
 {
   _eraseArrays();
+  switch(_mw->method())
+  {
+    case 0: //simplex
+      _memfree(_calc->simplex()->nSimplex() * 3, _po);
+      break;
+    default:
+      break;
+  }
   _mw->setEnabled(true);
 }
 
@@ -101,13 +138,13 @@ void GW::mouseMoveEvent(QMouseEvent *event)
 
   if(event->buttons() & Qt::LeftButton)
   {
-    _setRotation(0, _rot[0] + 8 * dy);
-    _setRotation(1, _rot[1] + 8 * dx);
+    _setRotation(0, _rot[0] + dy);
+    _setRotation(1, _rot[1] + dx);
   }
   else if(event->buttons() & Qt::RightButton)
   {
-    _setRotation(0, _rot[0] + 8 * dy);
-    _setRotation(2, _rot[2] + 8 * dx);
+    _setRotation(0, _rot[0] + dy);
+    _setRotation(2, _rot[2] + dx);
   }
 
     _lastPos = event->pos();
@@ -150,9 +187,9 @@ void GW::keyPressEvent(QKeyEvent *event)
   }
 }
 
-void GW::mainform(MW *mw) { _mw = mw; }
+void GW::setMainForm(MW *mw) { _mw = mw; }
 
-void GW::calcobject(Calc *calc) { _calc = calc; }
+void GW::setCalc(Calc *calc) { _calc = calc; }
 
 /*
  * PRIVATE
@@ -216,19 +253,35 @@ void GW::_setPoints()
       _pg[k][2] = _calc->z()[j][i] - (_calc->max(2) + _calc->min(2)) / 2.0;
       k++;
     }
-  //setting up normales to faces
+  //setting up normales to faces to graphic
   k = 0;
   for(int j = 0; j < _calc->N() - 1; j++)
     for(int i = 0; i < _calc->N() - 1; i++)
     {
-      _countNormale(_normales[k], _pg[_calc->N() * j + i],
+      _countNormale4(_normales[k], _pg[_calc->N() * j + i],
                     _pg[_calc->N() * j + i + 1],
                     _pg[_calc->N() * (j + 1) + i + 1],
                     _pg[_calc->N() * (j + 1) + i]);
-//      std::cout << k << "n = (" << _normales[k][0] << ';' << _normales[k][1] <<
-//                   ';' << _normales[k][2] << ")\n";
       k++;
     }
+  //setting up optimization points
+  switch(_mw->method())
+  {
+    case 0: //simplex
+      for(int i = 0; i < _calc->simplex()->nSimplex() * 3; i++)
+      {
+        _po[i][0] = _calc->simplex()->simplex()[i / 3][i % 3][0] -
+            (_calc->max(0) + _calc->min(0)) / 2.0;
+        _po[i][1] = _calc->simplex()->simplex()[i / 3][i % 3][1] -
+            (_calc->max(1) + _calc->min(1)) / 2.0;
+        _po[i][2] = _calc->simplex()->simplex()[i / 3][i % 3][2] -
+            (_calc->max(2) + _calc->min(2)) / 2.0;
+
+      }
+      break;
+    default:
+      break;
+  }
 }
 
 void GW::_setRotation(int axis, int angle)
@@ -243,7 +296,9 @@ void GW::_setRotation(int axis, int angle)
 
 void GW::_paintAxises()
 {
-  qglColor(Qt::gray);
+  GLfloat materialEmission[4] = { 0.0, 0.0, 0.0, 1.0 };
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, materialEmission);
+  glColor3d(0.5, 0.5, 0.5);
   for(int i = 0; i < 6; i += 2)
   {
     glBegin(GL_LINES);
@@ -255,7 +310,11 @@ void GW::_paintAxises()
 
 void GW::_paintPoints()
 {
-  qglColor(Qt::red);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  GLfloat materialEmission[4] = { 0.0, 0.0, 0.0, 1.0 };
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, materialEmission);
+  glColor3d(1.0, 1.0, 1.0);
   glBegin(GL_POINTS);
   for(int i = 0; i < _calc->N2(); i++)
     glVertex3dv(_pg[i]);
@@ -264,7 +323,11 @@ void GW::_paintPoints()
 
 void GW::_paintLines()
 {
-  qglColor(Qt::red);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_LIGHT0);
+  GLfloat materialEmission[4] = { 0.0, 0.0, 0.0, 1.0 };
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, materialEmission);
+  glColor3d(1.0, 1.0, 1.0);
   glBegin(GL_LINES);
   for(int j = 0; j < _calc->N() - 1; j++)
     for(int i = 0; i < _calc->N(); i++)
@@ -279,13 +342,15 @@ void GW::_paintLines()
 
 void GW::_paintFaces()
 {
-  qglColor(Qt::red);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  GLfloat materialEmission[4] = { 0.1, 0.0, 0.1, 1.0 };
+  glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, materialEmission);
   glBegin(GL_QUADS);
   int k = 0;
   for(int j = 0; j < _calc->N() - 1; j++)
     for(int i = 0; i < _calc->N() - 1; i++)
     {
-//      glColor3d(1.0, 0.0, 0.0);
       glNormal3dv(_normales[k]);
       glVertex3dv(_pg[j * _calc->N() + i]);
       glVertex3dv(_pg[j * _calc->N() + i + 1]);
@@ -296,7 +361,32 @@ void GW::_paintFaces()
   glEnd();
 }
 
-void GW::_countNormale(GLdouble *n, GLdouble *p1, GLdouble *p2, GLdouble *p3,
+void GW::_paintOptimization()
+{
+  switch(_mw->method())
+  {
+    case 0:
+      glBegin(GL_LINES);
+      for(int s = 0; s < _calc->simplex()->nSimplex() * 3; s += 3)
+      {
+        glColor3d(1.0 * (_calc->simplex()->nSimplex() / 3 - s) /
+                  _calc->simplex()->nSimplex() / 3,
+                  1.0 * s / _calc->simplex()->nSimplex() / 3, 0.0);
+        glVertex3dv(_po[s]);
+        glVertex3dv(_po[s + 1]);
+        glVertex3dv(_po[s + 1]);
+        glVertex3dv(_po[s + 2]);
+        glVertex3dv(_po[s + 2]);
+        glVertex3dv(_po[s]);
+      }
+      glEnd();
+      break;
+    default:
+      break;
+  }
+}
+
+void GW::_countNormale4(GLdouble *n, GLdouble *p1, GLdouble *p2, GLdouble *p3,
                             GLdouble *p4)
 {
   GLdouble v1[3], v2[3];
@@ -306,13 +396,7 @@ void GW::_countNormale(GLdouble *n, GLdouble *p1, GLdouble *p2, GLdouble *p3,
   v2[0] = p4[0] - p2[0];
   v2[1] = p4[1] - p2[1];
   v2[2] = p4[2] - p2[2];
-//  std::cout << (v1[1] * v2[2] - v1[2] * v2[1]) << '\n';
-//  std::cout << (v1[2] * v2[0] - v1[0] * v2[2]) << '\n';
-//  std::cout << (v1[0] * v2[1] - v1[1] * v2[0]) << '\n';
   n[0] = (v1[1] * v2[2] - v1[2] * v2[1]);
   n[1] = (v1[2] * v2[0] - v1[0] * v2[2]);
   n[2] = (v1[0] * v2[1] - v1[1] * v2[0]);
-//  std::cout << n[0] << '\n';
-//  std::cout << n[1] << '\n';
-//  std::cout << n[2] << '\n';
 }
