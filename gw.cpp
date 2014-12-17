@@ -1,8 +1,10 @@
-#include "calc.h"
-#include "mw.h"
+#include <iostream>
+
 #include "gw.h"
 #include "ui_gw.h"
-#include <iostream>
+#include "calc.h"
+#include "mw.h"
+#include "pw.h"
 
 GW::GW(QGLWidget *parent) : QGLWidget(parent), _gw(new Ui::GW)
 {
@@ -124,6 +126,8 @@ void GW::closeEvent(QCloseEvent *)
       break;
   }
   _mw->setEnabled(true);
+  if(!_pw->isHidden())
+    _pw->close();
 }
 
 void GW::mousePressEvent(QMouseEvent *event)
@@ -187,9 +191,11 @@ void GW::keyPressEvent(QKeyEvent *event)
   }
 }
 
+void GW::setCalc(Calc *calc) { _calc = calc; }
+
 void GW::setMainForm(MW *mw) { _mw = mw; }
 
-void GW::setCalc(Calc *calc) { _calc = calc; }
+void GW::setPlanarForm(PW *pw) { _pw = pw; }
 
 /*
  * PRIVATE

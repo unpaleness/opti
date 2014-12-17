@@ -4,7 +4,6 @@
 #include <cmath>
 
 #define MAXSIMPLEXES 100
-#define ACCURACY 0.001
 
 class Calc;
 
@@ -27,12 +26,15 @@ private:
   double _alpha;
   double _beta;
   double _gamma;
+  double _e;
 
   void _countSimplex(int); //optimizes using simplex-method
   template <class AnyClass>
   void _memalloc(int, int, int, AnyClass ***&);
   template <class AnyClass>
   void _memerase(int, int, AnyClass ***&);
+  template <class T>
+  void _sort(int, T *, bool); //sorting due to bool option
 };
 
 #endif // SIMPLEX_H

@@ -5,12 +5,8 @@
 
 #include "simplex.h"
 
-#define MEMBERS 3
-#define POINTS 101
-#define MINX -10.0
-#define MAXX 10.0
-#define MINY -10.0
-#define MAXY 10.0
+#define CALC_FUNCTIONS 6
+#define CALC_MEMBERS 3
 
 //class Simplex;
 
@@ -20,15 +16,16 @@ public:
     Calc();
     ~Calc();
 
-    double &a(int);
-    double &powx(int);
-    double &powy(int);
+    double &a(int, int);
+    double &powx(int, int);
+    double &powy(int, int);
     double *x();
     double *y();
     double **z();
     double z(double, double);
     double max(int);
     double min(int);
+    double step(int);
     int N();
     int N2();
     void countPlot(); //count plot for illustration
@@ -44,9 +41,9 @@ private:
     bool _isCounted;
     int _extremum; //type of extermum
     int _N; //points on axises
-    double *_a; //coefficients
-    double *_powx; //x powers
-    double *_powy; //y powers
+    double **_a; //coefficients
+    double **_powx; //x powers
+    double **_powy; //y powers
     /* displaying variables */
     double _max[3];
     double _min[3];
@@ -56,7 +53,7 @@ private:
 
     void _initialize(); //initialize plotting arrays
     void _eraseinitialization(); //erase memory after plotting arrays
-    double _fun(double, double);
+    double _fun(int, double, double);
     void _countPlot();
     template <class AnyClass>
     void _memalloc(int, AnyClass *&);

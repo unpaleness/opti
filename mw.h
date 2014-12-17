@@ -6,6 +6,7 @@
 namespace Ui { class MW; }
 
 class GW;
+class PW;
 class Calc;
 
 class MW : public QMainWindow
@@ -16,8 +17,11 @@ public:
     explicit MW(QMainWindow *parent = 0);
     ~MW();
 
+    void showEvent(QShowEvent *);
+
     void setCalc(Calc *);
     void setGraphicForm(GW *);
+    void setPlanarForm(PW *);
     int method();
 
 private slots:
@@ -28,6 +32,7 @@ private slots:
 private:
     Ui::MW *_mw; //main form
     GW *_gw; //graphic form
+    PW *_pw; //planar from
     Calc *_calc; //calculating class
 
     int _method;

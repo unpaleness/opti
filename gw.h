@@ -17,8 +17,9 @@ namespace Ui {
   class GW;
 }
 
-class MW;
 class Calc;
+class MW;
+class PW;
 
 class GW : public QGLWidget
 {
@@ -38,12 +39,14 @@ public:
   void wheelEvent(QWheelEvent *); // on wheel roll
   void keyPressEvent(QKeyEvent *); //on pressing keyboard
 
-  void setMainForm(MW *); //main form connecting
   void setCalc(Calc *); //calc object connecting
+  void setMainForm(MW *); //main form connecting
+  void setPlanarForm(PW *);
 
 private:
   Ui::GW *_gw; //graphic form (this)
   MW *_mw; //main form
+  PW *_pw; //planar from
   Calc *_calc; //calculating object
 
   bool _isInitialized; //flag that show that all arrays are initialized

@@ -15,13 +15,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mw.cpp \
         calc.cpp \
-    gw.cpp \
-    simplex.cpp
+        gw.cpp \
+        simplex.cpp \
+    pw.cpp
 
 HEADERS += mw.h \
         calc.h \
-    gw.h \
-    simplex.h
+        gw.h \
+        simplex.h \
+    pw.h
 
 FORMS += mw.ui \
-    gw.ui
+      gw.ui \
+    pw.ui

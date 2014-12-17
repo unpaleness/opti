@@ -1,5 +1,5 @@
-#include "calc.h"
 #include "simplex.h"
+#include "calc.h"
 #include <iostream>
 
 Simplex::Simplex()
@@ -8,6 +8,7 @@ Simplex::Simplex()
   _alpha = 1.0;
   _beta = 0.5;
   _gamma = 2.0;
+  _e = 0.001;
 }
 
 Simplex::~Simplex()
@@ -33,6 +34,8 @@ double ***Simplex::simplex() { return _simplex; }
 //0 - minimum, 1 - maximum
 void Simplex::_countSimplex(int extremum)
 {
+  //local variables
+
   //local variables
   bool isExtremumFound;
   double *ph;
@@ -136,7 +139,7 @@ void Simplex::_countSimplex(int extremum)
       if(i == 2)
         i2 = 0;
       if(sqrt((_simplex[s][i2][0] - _simplex[s][i][0]) *
-              (_simplex[s][i2][0] - _simplex[s][i][0])) > ACCURACY)
+              (_simplex[s][i2][0] - _simplex[s][i][0])) > _e)
         isExtremumFound = false;
     }
     //number of simplexes
@@ -172,4 +175,18 @@ void Simplex::_memerase(int dim1, int dim2, AnyClass ***&arr)
     delete [] arr[j];
   }
   delete [] arr;
+}
+
+template <class T>
+void _sort(int size, T *array, bool cond(T, T))
+{
+  T temp;
+  for(int j = 0; j < size; j++)
+    for(int i = j + 1; i < size; i++)
+      if(!cond(array[i], array[j]))
+      {
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+      }
 }

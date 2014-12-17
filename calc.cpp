@@ -7,16 +7,16 @@
 
 Calc::Calc()
 {
-  _N = POINTS;
-  _memalloc(MEMBERS, _a);
-  _memalloc(MEMBERS, _powx);
-  _memalloc(MEMBERS, _powy);
+  _N = 101;
+  _memalloc(CALC_FUNCTIONS, CALC_MEMBERS, _a);
+  _memalloc(CALC_FUNCTIONS, CALC_MEMBERS, _powx);
+  _memalloc(CALC_FUNCTIONS, CALC_MEMBERS, _powy);
   _initialize();
   _isCounted = false;
-  _max[0] = MAXX;
-  _min[0] = MINX;
-  _max[1] = MAXY;
-  _min[1] = MINY;
+  _max[0] = 10.0;
+  _min[0] = -10.0;
+  _max[1] = 10.0;
+  _min[1] = -10.0;
   _max[2] = 0;
   _min[2] = 0;
   _simplex = new Simplex;
@@ -25,22 +25,23 @@ Calc::Calc()
 
 Calc::~Calc()
 {
-  _memerase(_a);
-  _memerase(_powx);
-  _memerase(_powy);
+  _memerase(CALC_FUNCTIONS, _a);
+  _memerase(CALC_FUNCTIONS, _powx);
+  _memerase(CALC_FUNCTIONS, _powy);
   _eraseinitialization();
   delete _simplex;
 }
 
-double &Calc::a(int index) { return _a[index]; }
-double &Calc::powx(int index) { return _powx[index]; }
-double &Calc::powy(int index) { return _powy[index]; }
+double &Calc::a(int fu, int index) { return _a[fu][index]; }
+double &Calc::powx(int fu, int index) { return _powx[fu][index]; }
+double &Calc::powy(int fu, int index) { return _powy[fu][index]; }
 double *Calc::x() { return _axis_x; }
 double *Calc::y() { return _axis_y; }
 double **Calc::z() { return _z_plot; }
-double Calc::z(double x, double y) { return _fun(y, x); }
+double Calc::z(double x, double y) { return _fun(0, y, x); }
 double Calc::max(int i) { return _max[i]; }
 double Calc::min(int i) { return _min[i]; }
+double Calc::step(int i) { return (_max[i] - _min[i]) / (_N - 1); }
 int Calc::N() { return _N; }
 int Calc::N2() { return _N * _N; }
 Simplex *Calc::simplex() { return _simplex; }
@@ -86,11 +87,11 @@ void Calc::_eraseinitialization()
   _memerase(_N, _z_plot);
 }
 
-double Calc::_fun(double y, double x)
+double Calc::_fun(int fu, double y, double x)
 {
-    return _a[0] * pow(x, _powx[0]) * pow(y, _powy[0]) +
-            _a[1] * pow(x, _powx[1]) * pow(y, _powy[1]) +
-            _a[2] * pow(x, _powx[2]) * pow(y, _powy[2]);
+    return _a[fu][0] * pow(x, _powx[0][0]) * pow(y, _powy[0][0]) +
+            _a[fu][1] * pow(x, _powx[0][1]) * pow(y, _powy[0][1]) +
+            _a[fu][2] * pow(x, _powx[0][2]) * pow(y, _powy[0][2]);
 }
 
 void Calc::_countPlot()
@@ -105,10 +106,12 @@ void Calc::_countPlot()
     _axis_x[i] = _axis_x[i-1] + dx;
     _axis_y[i] = _axis_y[i-1] + dy;
   }
+  _max[2] = _fun(0, _axis_y[_N / 2], _axis_x[_N / 2]);
+  _min[2] = _fun(0, _axis_y[_N / 2], _axis_x[_N / 2]);
   for(int j = 0; j < _N; j++)
     for(int i = 0; i < _N; i++)
     {
-      _z_plot[j][i] = _fun(_axis_y[j], _axis_x[i]);
+      _z_plot[j][i] = _fun(0, _axis_y[j], _axis_x[i]);
       if(_z_plot[j][i] > _max[2]) _max[2] = _z_plot[j][i];
       if(_z_plot[j][i] < _min[2]) _min[2] = _z_plot[j][i];
     }
