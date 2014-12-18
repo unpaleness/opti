@@ -273,7 +273,9 @@ void GW::_setPoints()
   //setting up optimization points
   switch(_mw->method())
   {
-    case 0: //simplex
+    case 0: //powell
+      break;
+    case 1: //simplex
       for(int i = 0; i < _calc->simplex()->nSimplex() * 3; i++)
       {
         _po[i][0] = _calc->simplex()->simplex()[i / 3][i % 3][0] -
@@ -371,7 +373,9 @@ void GW::_paintOptimization()
 {
   switch(_mw->method())
   {
-    case 0:
+    case 0: // powell
+      break;
+    case 1: //simplex
       glBegin(GL_LINES);
       for(int s = 0; s < _calc->simplex()->nSimplex() * 3; s += 3)
       {

@@ -48,6 +48,34 @@ int MW::_readParams()
     _calc->powy(0, 0) = _mw->lepowy1->text().toDouble();
     _calc->powy(0, 1) = _mw->lepowy2->text().toDouble();
     _calc->powy(0, 2) = _mw->lepowy3->text().toDouble();
+    _calc->a(1, 0) = _mw->lea1_2->text().toDouble();
+    _calc->a(1, 1) = _mw->lea2_2->text().toDouble();
+    _calc->a(1, 2) = _mw->lea3_2->text().toDouble();
+    _calc->powx(1, 0) = _mw->lepowx1_2->text().toDouble();
+    _calc->powx(1, 1) = _mw->lepowx2_2->text().toDouble();
+    _calc->powx(1, 2) = _mw->lepowx3_2->text().toDouble();
+    _calc->powy(1, 0) = _mw->lepowy1_2->text().toDouble();
+    _calc->powy(1, 1) = _mw->lepowy2_2->text().toDouble();
+    _calc->powy(1, 2) = _mw->lepowy3_2->text().toDouble();
+    _calc->a(2, 0) = _mw->lea1_3->text().toDouble();
+    _calc->a(2, 1) = _mw->lea2_3->text().toDouble();
+    _calc->a(2, 2) = _mw->lea3_3->text().toDouble();
+    _calc->powx(2, 0) = _mw->lepowx1_3->text().toDouble();
+    _calc->powx(2, 1) = _mw->lepowx2_3->text().toDouble();
+    _calc->powx(2, 2) = _mw->lepowx3_3->text().toDouble();
+    _calc->powy(2, 0) = _mw->lepowy1_3->text().toDouble();
+    _calc->powy(2, 1) = _mw->lepowy2_3->text().toDouble();
+    _calc->powy(2, 2) = _mw->lepowy3_3->text().toDouble();
+    _calc->lineEdits(0) = _mw->lineEdit_1->text().toDouble();
+    _calc->lineEdits(1) = _mw->lineEdit_2->text().toDouble();
+    _calc->lineEdits(2) = _mw->lineEdit_3->text().toDouble();
+    _calc->lineEdits(3) = _mw->lineEdit_4->text().toDouble();
+    _calc->lineEdits(4) = _mw->lineEdit_5->text().toDouble();
+    _calc->lineEdits(5) = _mw->lineEdit_6->text().toDouble();
+    _calc->lineEdits(6) = _mw->lineEdit_7->text().toDouble();
+    _calc->lineEdits(7) = _mw->lineEdit_8->text().toDouble();
+    _calc->lineEdits(8) = _mw->lineEdit_9->text().toDouble();
+    _calc->lineEdits(9) = _mw->lineEdit_10->text().toDouble();
     return 0;
 }
 
@@ -62,6 +90,24 @@ int MW::_updateParams()
     _mw->lepowy1->setText(QString::number(_calc->powy(0, 0)));
     _mw->lepowy2->setText(QString::number(_calc->powy(0, 1)));
     _mw->lepowy3->setText(QString::number(_calc->powy(0, 2)));
+    _mw->lea1_2->setText(QString::number(_calc->a(1, 0)));
+    _mw->lea2_2->setText(QString::number(_calc->a(1, 1)));
+    _mw->lea3_2->setText(QString::number(_calc->a(1, 2)));
+    _mw->lepowx1_2->setText(QString::number(_calc->powx(1, 0)));
+    _mw->lepowx2_2->setText(QString::number(_calc->powx(1, 1)));
+    _mw->lepowx3_2->setText(QString::number(_calc->powx(1, 2)));
+    _mw->lepowy1_2->setText(QString::number(_calc->powy(1, 0)));
+    _mw->lepowy2_2->setText(QString::number(_calc->powy(1, 1)));
+    _mw->lepowy3_2->setText(QString::number(_calc->powy(1, 2)));
+    _mw->lea1_3->setText(QString::number(_calc->a(2, 0)));
+    _mw->lea2_3->setText(QString::number(_calc->a(2, 1)));
+    _mw->lea3_3->setText(QString::number(_calc->a(2, 2)));
+    _mw->lepowx1_3->setText(QString::number(_calc->powx(2, 0)));
+    _mw->lepowx2_3->setText(QString::number(_calc->powx(2, 1)));
+    _mw->lepowx3_3->setText(QString::number(_calc->powx(2, 2)));
+    _mw->lepowy1_3->setText(QString::number(_calc->powy(2, 0)));
+    _mw->lepowy2_3->setText(QString::number(_calc->powy(2, 1)));
+    _mw->lepowy3_3->setText(QString::number(_calc->powy(2, 2)));
     return 0;
 }
 
@@ -72,8 +118,9 @@ void MW::on_pbexec_clicked()
     _updateParams();
     _mw->lestatus->setText(str);
     _calc->countPlot();
-    _calc->optimize(_mw->cbMethod->currentIndex());
-    _mw->lestatus->setText(QString::number(_calc->simplex()->nSimplex()));
+    _calc->optimize(_mw->cbMethod->currentIndex(),
+                    _mw->cbExtremum->currentIndex());
+//    _mw->lestatus->setText(QString::number(_calc->simplex()->nSimplex()));
 }
 
 void MW::on_pbgraph_clicked()

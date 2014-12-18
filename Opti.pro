@@ -11,19 +11,24 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Opti
 TEMPLATE = app
 
+QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += main.cpp\
         mw.cpp \
         calc.cpp \
         gw.cpp \
         simplex.cpp \
-    pw.cpp
+    pw.cpp \
+    powell.cpp \
+    method.cpp
 
 HEADERS += mw.h \
         calc.h \
         gw.h \
         simplex.h \
-    pw.h
+    pw.h \
+    powell.h \
+    method.h
 
 FORMS += mw.ui \
       gw.ui \

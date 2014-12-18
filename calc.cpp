@@ -20,7 +20,9 @@ Calc::Calc()
   _max[2] = 0;
   _min[2] = 0;
   _simplex = new Simplex;
+  _powell = new Powell;
   _simplex->setCalc(this);
+  _powell->setCalc(this);
 }
 
 Calc::~Calc()
@@ -30,11 +32,13 @@ Calc::~Calc()
   _memerase(CALC_FUNCTIONS, _powy);
   _eraseinitialization();
   delete _simplex;
+  delete _powell;
 }
 
 double &Calc::a(int fu, int index) { return _a[fu][index]; }
 double &Calc::powx(int fu, int index) { return _powx[fu][index]; }
 double &Calc::powy(int fu, int index) { return _powy[fu][index]; }
+double &Calc::lineEdits(int index) { return _lineEdits[index]; }
 double *Calc::x() { return _axis_x; }
 double *Calc::y() { return _axis_y; }
 double **Calc::z() { return _z_plot; }
@@ -44,9 +48,14 @@ double Calc::min(int i) { return _min[i]; }
 double Calc::step(int i) { return (_max[i] - _min[i]) / (_N - 1); }
 int Calc::N() { return _N; }
 int Calc::N2() { return _N * _N; }
-Simplex *Calc::simplex() { return _simplex; }
 void Calc::setMax(int i, int max) { _max[i] = max; }
 void Calc::setMin(int i, int min) { _min[i] = min; }
+
+Simplex *Calc::simplex() { return _simplex; }
+Powell *Calc::powell() { return _powell; }
+double Calc::f(double x, double y) { return _fun(0, y, x); }
+double Calc::dfdx(double x, double y) { return _fun(1, y, x); }
+double Calc::dfdy(double x, double y) { return _fun(2, y, x); }
 
 void Calc::countPlot()
 {
@@ -55,12 +64,17 @@ void Calc::countPlot()
 }
 
 //0 - Simplex (Nelder-Mid)
-void Calc::optimize(int method)
+void Calc::optimize(int method, int extremum)
 {
   switch(method)
   {
     case 0:
-      _simplex->countSimpex(_extremum);
+      _powell->init(_lineEdits);
+      _powell->count(extremum);
+      break;
+    case 1:
+      _simplex->init(_lineEdits);
+      _simplex->count(extremum);
       break;
     default:
       break;
@@ -89,9 +103,9 @@ void Calc::_eraseinitialization()
 
 double Calc::_fun(int fu, double y, double x)
 {
-    return _a[fu][0] * pow(x, _powx[0][0]) * pow(y, _powy[0][0]) +
-            _a[fu][1] * pow(x, _powx[0][1]) * pow(y, _powy[0][1]) +
-            _a[fu][2] * pow(x, _powx[0][2]) * pow(y, _powy[0][2]);
+    return _a[fu][0] * pow(x, _powx[fu][0]) * pow(y, _powy[fu][0]) +
+            _a[fu][1] * pow(x, _powx[fu][1]) * pow(y, _powy[fu][1]) +
+            _a[fu][2] * pow(x, _powx[fu][2]) * pow(y, _powy[fu][2]);
 }
 
 void Calc::_countPlot()

@@ -4,8 +4,9 @@
 #include <cmath>
 
 #include "simplex.h"
+#include "powell.h"
 
-#define CALC_FUNCTIONS 6
+#define CALC_FUNCTIONS 3
 #define CALC_MEMBERS 3
 
 //class Simplex;
@@ -19,6 +20,7 @@ public:
     double &a(int, int);
     double &powx(int, int);
     double &powy(int, int);
+    double &lineEdits(int);
     double *x();
     double *y();
     double **z();
@@ -29,21 +31,27 @@ public:
     int N();
     int N2();
     void countPlot(); //count plot for illustration
-    void optimize(int); //optimize with seleceted method
+    void optimize(int, int); //optimize with seleceted method by min or max
     bool isCounted();
     Simplex *simplex();
+    Powell *powell();
     void setMin(int, int);
     void setMax(int, int);
 
+    double f(double, double);
+    double dfdx(double, double);
+    double dfdy(double, double);
+
 private:
     Simplex *_simplex; //simplex-method object
+    Powell *_powell; //powell-method object
 
     bool _isCounted;
-    int _extremum; //type of extermum
     int _N; //points on axises
     double **_a; //coefficients
     double **_powx; //x powers
     double **_powy; //y powers
+    double _lineEdits[10]; //values of optional line edits
     /* displaying variables */
     double _max[3];
     double _min[3];

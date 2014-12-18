@@ -4,23 +4,15 @@
 
 Simplex::Simplex()
 {
-  _memalloc(MAXSIMPLEXES, 3, 3, _simplex);
+  _memalloc(SIMPLEX_MAX, 3, 3, _simplex);
   _alpha = 1.0;
   _beta = 0.5;
   _gamma = 2.0;
-  _e = 0.001;
 }
 
 Simplex::~Simplex()
 {
-  _memerase(MAXSIMPLEXES, 3, _simplex);
-}
-
-void Simplex::setCalc(Calc *calc) { _calc = calc; }
-
-void Simplex::countSimpex(int extremum)
-{
-  _countSimplex(extremum);
+  _memerase(SIMPLEX_MAX, 3, _simplex);
 }
 
 int Simplex::nSimplex() { return _nSimplex; }
@@ -31,8 +23,24 @@ double ***Simplex::simplex() { return _simplex; }
  * PRIVATE
  */
 
+void Simplex::init(double *params)
+{
+  _simplex[0][0][0] = params[0];
+  _simplex[0][0][1] = params[1];
+  _simplex[0][0][2] = _calc->f(_simplex[0][0][0], _simplex[0][0][1]);
+  _simplex[0][1][0] = params[2];
+  _simplex[0][1][1] = params[3];
+  _simplex[0][1][2] = _calc->f(_simplex[0][1][0], _simplex[0][1][1]);
+  _simplex[0][2][0] = params[4];
+  _simplex[0][2][1] = params[5];
+  _simplex[0][2][2] = _calc->f(_simplex[0][2][0], _simplex[0][2][1]);
+  _alpha = params[6];
+  _beta = params[7];
+  _gamma = params[8];
+}
+
 //0 - minimum, 1 - maximum
-void Simplex::_countSimplex(int extremum)
+void Simplex::count(int extremum)
 {
   //local variables
 
@@ -62,7 +70,7 @@ void Simplex::_countSimplex(int extremum)
     std::cout << 'p' << i + 1 << '(' << _simplex[0][i][0] << ';'
               << _simplex[0][i][1]  << ';' << _simplex[0][i][2] << ")\n";
   //Get... Set... COUNT!
-  for(int s = 1; s < MAXSIMPLEXES; s++)
+  for(int s = 1; s < SIMPLEX_MAX; s++)
   {
     isExtremumFound = true;
     //preparing
