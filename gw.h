@@ -57,7 +57,7 @@ private:
   int _windowHeight; //window height
   QPoint _lastPos;
   GLdouble **_pg; //points of graphic
-  GLdouble **_po; //point of optimization
+//  GLdouble **_po; //point of optimization
   GLdouble _pa[6][3]; //points of axises
   GLdouble _eyePosition[3]; //eye position o_O
   GLdouble **_normales; //normales to faces
@@ -80,7 +80,7 @@ private:
   void _paintPoints(); //paints points
   void _paintLines(); //paints lines
   void _paintFaces(); //paints faces
-  void _paintOptimization(); //paints optimization proccess
+//  void _paintOptimization(); //paints optimization proccess
   void _countNormale4(GLdouble *, GLdouble *, GLdouble *, GLdouble *,
                      GLdouble *);
 };

@@ -23,14 +23,14 @@ GW::~GW()
   if(_isInitialized) //delete arrays only if they were initialized
   {
     _eraseArrays();
-    switch(_mw->method())
-    {
-      case 0: //simplex
-        _memfree(_calc->simplex()->nSimplex() * 3, _po);
-        break;
-      default:
-        break;
-    }
+//    switch(_mw->method())
+//    {
+//      case 0: //simplex
+//        _memfree(_calc->simplex()->nSimplex() * 3, _po);
+//        break;
+//      default:
+//        break;
+//    }
   }
   delete _gw;
 }
@@ -73,9 +73,10 @@ void GW::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glLoadIdentity(); //загружаем матрицу
-//  if(_isNormilizedZ)
-//    glScaled(1.0, 1.0, 0.1);
   glTranslated(_eyePosition[0], _eyePosition[1], _eyePosition[2]);
+  if(_isNormilizedZ)
+    glScaled(1.0, 1.0,
+             (_calc->max(0) - _calc->min(0)) /(_calc->max(2) - _calc->min(2)));
   glRotated(_rot[0] / 16.0, 1.0, 0.0, 0.0);
   glRotated(_rot[1] / 16.0, 0.0, 1.0, 0.0);
   glRotated(_rot[2] / 16.0, 0.0, 0.0, 1.0);
@@ -92,7 +93,7 @@ void GW::paintGL()
       break;
   }
   _paintAxises();
-  _paintOptimization();
+//  _paintOptimization();
 //  glFlush();
 }
 
@@ -101,14 +102,14 @@ void GW::showEvent(QShowEvent *)
   if(!_isInitialized)
   {
     _initializeArrays();
-    switch(_mw->method())
-    {
-      case 0: //simplex
-        _memalloc(_calc->simplex()->nSimplex() * 3, 3, _po);
-        break;
-      default:
-        break;
-    }
+//    switch(_mw->method())
+//    {
+//      case 0: //simplex
+//        _memalloc(_calc->simplex()->nSimplex() * 3, 3, _po);
+//        break;
+//      default:
+//        break;
+//    }
   }
   _setPoints();
 //  updateGL();
@@ -117,14 +118,14 @@ void GW::showEvent(QShowEvent *)
 void GW::closeEvent(QCloseEvent *)
 {
   _eraseArrays();
-  switch(_mw->method())
-  {
-    case 0: //simplex
-      _memfree(_calc->simplex()->nSimplex() * 3, _po);
-      break;
-    default:
-      break;
-  }
+//  switch(_mw->method())
+//  {
+//    case 0: //simplex
+//      _memfree(_calc->simplex()->nSimplex() * 3, _po);
+//      break;
+//    default:
+//      break;
+//  }
   _mw->setEnabled(true);
   if(!_pw->isHidden())
     _pw->close();
@@ -271,25 +272,25 @@ void GW::_setPoints()
       k++;
     }
   //setting up optimization points
-  switch(_mw->method())
-  {
-    case 0: //powell
-      break;
-    case 1: //simplex
-      for(int i = 0; i < _calc->simplex()->nSimplex() * 3; i++)
-      {
-        _po[i][0] = _calc->simplex()->simplex()[i / 3][i % 3][0] -
-            (_calc->max(0) + _calc->min(0)) / 2.0;
-        _po[i][1] = _calc->simplex()->simplex()[i / 3][i % 3][1] -
-            (_calc->max(1) + _calc->min(1)) / 2.0;
-        _po[i][2] = _calc->simplex()->simplex()[i / 3][i % 3][2] -
-            (_calc->max(2) + _calc->min(2)) / 2.0;
+//  switch(_mw->method())
+//  {
+//    case 0: //powell
+//      break;
+//    case 1: //simplex
+//      for(int i = 0; i < _calc->simplex()->nSimplex() * 3; i++)
+//      {
+//        _po[i][0] = _calc->simplex()->simplex()[i / 3][i % 3][0] -
+//            (_calc->max(0) + _calc->min(0)) / 2.0;
+//        _po[i][1] = _calc->simplex()->simplex()[i / 3][i % 3][1] -
+//            (_calc->max(1) + _calc->min(1)) / 2.0;
+//        _po[i][2] = _calc->simplex()->simplex()[i / 3][i % 3][2] -
+//            (_calc->max(2) + _calc->min(2)) / 2.0;
 
-      }
-      break;
-    default:
-      break;
-  }
+//      }
+//      break;
+//    default:
+//      break;
+//  }
 }
 
 void GW::_setRotation(int axis, int angle)
@@ -369,32 +370,32 @@ void GW::_paintFaces()
   glEnd();
 }
 
-void GW::_paintOptimization()
-{
-  switch(_mw->method())
-  {
-    case 0: // powell
-      break;
-    case 1: //simplex
-      glBegin(GL_LINES);
-      for(int s = 0; s < _calc->simplex()->nSimplex() * 3; s += 3)
-      {
-        glColor3d(1.0 * (_calc->simplex()->nSimplex() / 3 - s) /
-                  _calc->simplex()->nSimplex() / 3,
-                  1.0 * s / _calc->simplex()->nSimplex() / 3, 0.0);
-        glVertex3dv(_po[s]);
-        glVertex3dv(_po[s + 1]);
-        glVertex3dv(_po[s + 1]);
-        glVertex3dv(_po[s + 2]);
-        glVertex3dv(_po[s + 2]);
-        glVertex3dv(_po[s]);
-      }
-      glEnd();
-      break;
-    default:
-      break;
-  }
-}
+//void GW::_paintOptimization()
+//{
+//  switch(_mw->method())
+//  {
+//    case 0: // powell
+//      break;
+//    case 1: //simplex
+//      glBegin(GL_LINES);
+//      for(int s = 0; s < _calc->simplex()->nSimplex() * 3; s += 3)
+//      {
+//        glColor3d(1.0 * (_calc->simplex()->nSimplex() / 3 - s) /
+//                  _calc->simplex()->nSimplex() / 3,
+//                  1.0 * s / _calc->simplex()->nSimplex() / 3, 0.0);
+//        glVertex3dv(_po[s]);
+//        glVertex3dv(_po[s + 1]);
+//        glVertex3dv(_po[s + 1]);
+//        glVertex3dv(_po[s + 2]);
+//        glVertex3dv(_po[s + 2]);
+//        glVertex3dv(_po[s]);
+//      }
+//      glEnd();
+//      break;
+//    default:
+//      break;
+//  }
+//}
 
 void GW::_countNormale4(GLdouble *n, GLdouble *p1, GLdouble *p2, GLdouble *p3,
                             GLdouble *p4)

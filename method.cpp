@@ -3,7 +3,7 @@
 
 Method::Method()
 {
-  _e = 0.001;
+  _e = 0.0000001;
 }
 
 Method::~Method() {}

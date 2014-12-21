@@ -62,6 +62,7 @@ void PW::paintGL()
   glLoadIdentity(); //загружаем матрицу
   _paintPoints();
   _paintAxises();
+  _paintWay();
 }
 
 void PW::setCalc(Calc *calc) { _calc = calc; }
@@ -131,4 +132,28 @@ void PW::_paintAxises()
   glVertex2d(- (_calc->max(0) - _calc->min(0)) * 0.025,
              _calc->max(1) - (_calc->max(1) - _calc->min(1)) * 0.05);
   glEnd();
+}
+
+void PW::_paintWay()
+{
+  switch(_mw->method())
+  {
+    case 0: // powell
+      glColor3d(0.0, 0.0, 0.0);
+      glBegin(GL_LINES);
+      for(int i = 0; i < _calc->powell()->nPoints() - 1; i++)
+      {
+        glVertex2d(_calc->powell()->points(i, 0),
+                   _calc->powell()->points(i, 1));
+        glVertex2d(_calc->powell()->points(i + 1, 0),
+                   _calc->powell()->points(i + 1, 1));
+      }
+      glEnd();
+      break;
+    case 1:
+      break;
+    default:
+      break;
+  }
+
 }

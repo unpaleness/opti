@@ -35,8 +35,8 @@ public:
     bool isCounted();
     Simplex *simplex();
     Powell *powell();
-    void setMin(int, int);
-    void setMax(int, int);
+    void setMin(int, double);
+    void setMax(int, double);
 
     double f(double, double);
     double dfdx(double, double);

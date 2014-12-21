@@ -21,7 +21,8 @@ public:
 private:
   int _nPoints; // amount of points
   double **_points; // 3D-points of searching way
-  double _x0[2]; // start point
+
+  double _minimum(int, double, int);
 
 };
 

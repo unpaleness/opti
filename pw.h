@@ -41,6 +41,7 @@ private:
   void _setPoints();
   void _paintPoints();
   void _paintAxises();
+  void _paintWay();
 };
 
 #endif // PW_H

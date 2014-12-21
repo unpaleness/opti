@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>1</string>
+     <string>2</string>
     </property>
    </widget>
    <widget class="QLabel" name="lfun">
@@ -50,7 +50,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>2</string>
+     <string>4</string>
     </property>
    </widget>
    <widget class="QLabel" name="lx1">
@@ -88,6 +88,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="text">
+     <string>2</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lepowy2">
     <property name="geometry">
@@ -110,6 +113,9 @@
       <width>21</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
     </property>
    </widget>
    <widget class="QLabel" name="ly2">
@@ -135,7 +141,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>1</string>
+     <string>3</string>
     </property>
    </widget>
    <widget class="QLabel" name="lx2">
@@ -186,6 +192,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="text">
+     <string>1</string>
+    </property>
    </widget>
    <widget class="QLabel" name="lx3">
     <property name="geometry">
@@ -209,6 +218,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="text">
+     <string>1</string>
+    </property>
    </widget>
    <widget class="QLabel" name="ly3">
     <property name="geometry">
@@ -231,6 +243,9 @@
       <width>21</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbexec">
@@ -804,6 +819,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="text">
+     <string>0.3</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_2">
     <property name="geometry">
@@ -813,6 +831,9 @@
       <width>51</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>0.6</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_3">
@@ -895,6 +916,110 @@
      </rect>
     </property>
    </widget>
+   <widget class="QLineEdit" name="leMinX">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>260</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-1</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leMaxX">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>260</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lMinX">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>240</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>x min</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lMinX_2">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>240</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>x max</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lMinX_3">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>280</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>y max</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leMinY">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>300</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-1</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leMaxY">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>300</y>
+      <width>51</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lMinX_4">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>280</y>
+      <width>31</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>y min</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -902,7 +1027,7 @@
      <x>0</x>
      <y>0</y>
      <width>467</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

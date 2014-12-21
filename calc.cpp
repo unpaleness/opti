@@ -48,8 +48,8 @@ double Calc::min(int i) { return _min[i]; }
 double Calc::step(int i) { return (_max[i] - _min[i]) / (_N - 1); }
 int Calc::N() { return _N; }
 int Calc::N2() { return _N * _N; }
-void Calc::setMax(int i, int max) { _max[i] = max; }
-void Calc::setMin(int i, int min) { _min[i] = min; }
+void Calc::setMax(int i, double max) { _max[i] = max; }
+void Calc::setMin(int i, double min) { _min[i] = min; }
 
 Simplex *Calc::simplex() { return _simplex; }
 Powell *Calc::powell() { return _powell; }
