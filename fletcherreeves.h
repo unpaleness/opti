@@ -1,18 +1,18 @@
-#ifndef POWELL_H
-#define POWELL_H
+#ifndef FLETCHERREEVES_H
+#define FLETCHERREEVES_H
 
 #include "method.h"
 
-#define POWELL_MAX 100
+#define FLETCHER_MAX 100
 #define W 7
 
 class Calc;
 
-class Powell : public Method
+class FletcherReeves : public Method
 {
 public:
-  Powell();
-  ~Powell();
+  FletcherReeves();
+  ~FletcherReeves();
 
   int nPoints();
   double points(int, int);
@@ -23,9 +23,7 @@ private:
   int _nPoints; // amount of points
   double **_points; // 3D-points of searching way
 
-  int _rank(double **);
   void _gold(double *, double *, double *, double);
-
 };
 
-#endif // POWELL_H
+#endif // FLETCHERREEVES_H

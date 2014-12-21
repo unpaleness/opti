@@ -21,8 +21,10 @@ Calc::Calc()
   _min[2] = 0;
   _simplex = new Simplex;
   _powell = new Powell;
+  _fletcherReeves = new FletcherReeves;
   _simplex->setCalc(this);
   _powell->setCalc(this);
+  _fletcherReeves->setCalc(this);
 }
 
 Calc::~Calc()
@@ -33,6 +35,7 @@ Calc::~Calc()
   _eraseinitialization();
   delete _simplex;
   delete _powell;
+  delete _fletcherReeves;
 }
 
 double &Calc::a(int fu, int index) { return _a[fu][index]; }
@@ -53,6 +56,7 @@ void Calc::setMin(int i, double min) { _min[i] = min; }
 
 Simplex *Calc::simplex() { return _simplex; }
 Powell *Calc::powell() { return _powell; }
+FletcherReeves *Calc::fletcherReeves() { return _fletcherReeves; }
 double Calc::f(double x, double y) { return _fun(0, y, x); }
 double Calc::dfdx(double x, double y) { return _fun(1, y, x); }
 double Calc::dfdy(double x, double y) { return _fun(2, y, x); }
@@ -73,12 +77,28 @@ void Calc::optimize(int method, int extremum)
       _powell->count(extremum);
       break;
     case 1:
-      _simplex->init(_lineEdits);
-      _simplex->count(extremum);
+      _fletcherReeves->init(_lineEdits);
+      _fletcherReeves->count(extremum);
       break;
     default:
       break;
   }
+}
+
+double *Calc::getExtremum(int method)
+{
+  switch(method)
+  {
+    case 0:
+      return _powell->extremum();
+      break;
+    case 1:
+      return _fletcherReeves->extremum();
+      break;
+    default:
+      break;
+  }
+  return nullptr;
 }
 
 bool Calc::isCounted() { return _isCounted; }
@@ -103,9 +123,10 @@ void Calc::_eraseinitialization()
 
 double Calc::_fun(int fu, double y, double x)
 {
-    return _a[fu][0] * pow(x, _powx[fu][0]) * pow(y, _powy[fu][0]) +
-            _a[fu][1] * pow(x, _powx[fu][1]) * pow(y, _powy[fu][1]) +
-            _a[fu][2] * pow(x, _powx[fu][2]) * pow(y, _powy[fu][2]);
+  double res = 0;
+  for(int i = 0; i < CALC_MEMBERS; i++)
+    res += _a[fu][i] * pow(x, _powx[fu][i]) * pow(y, _powy[fu][i]);
+  return res;
 }
 
 void Calc::_countPlot()

@@ -5,9 +5,10 @@
 
 #include "simplex.h"
 #include "powell.h"
+#include "fletcherreeves.h"
 
 #define CALC_FUNCTIONS 3
-#define CALC_MEMBERS 3
+#define CALC_MEMBERS 6
 
 //class Simplex;
 
@@ -30,11 +31,13 @@ public:
     double step(int);
     int N();
     int N2();
-    void countPlot(); //count plot for illustration
-    void optimize(int, int); //optimize with seleceted method by min or max
+    void countPlot(); // count plot for illustration
+    void optimize(int, int); // optimize with seleceted method by min or max
+    double *getExtremum(int); // gets extremum with selected method
     bool isCounted();
     Simplex *simplex();
     Powell *powell();
+    FletcherReeves *fletcherReeves();
     void setMin(int, double);
     void setMax(int, double);
 
@@ -45,6 +48,7 @@ public:
 private:
     Simplex *_simplex; //simplex-method object
     Powell *_powell; //powell-method object
+    FletcherReeves *_fletcherReeves;
 
     bool _isCounted;
     int _N; //points on axises

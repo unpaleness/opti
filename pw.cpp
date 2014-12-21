@@ -7,8 +7,8 @@
 PW::PW(QGLWidget *parent) : QGLWidget(parent), _pw(new Ui::PW)
 {
   _isInitialized = false;
-  _gridLinesX = 11;
-  _gridLinesY = 11;
+  _gridLinesX = 9;
+  _gridLinesY = 9;
   _pw->setupUi(this);
 }
 
@@ -94,8 +94,8 @@ void PW::_paintPoints()
   GLdouble zMax = _calc->max(2);
   for(int i = 0; i < _calc->N2(); i++)
   {
-    glColor3d((zMax - _pg[i][2]) / zRange * 0.5,
-              (_pg[i][2] - zMin) / zRange * 0.5, 0.0);
+    glColor3d((_pg[i][2] - zMin) / zRange * 0.7,
+              (zMax - _pg[i][2]) / zRange * 0.7, 0.0);
 //    glVertex3dv(_pg[i]);
     glVertex2d(_pg[i][0] - _calc->step(0) / 2.0,
                _pg[i][1] - _calc->step(1) / 2.0);
@@ -113,7 +113,7 @@ void PW::_paintAxises()
 {
   glBegin(GL_LINES);
   // x-grid
-  glColor3d(0.5, 0.5, 0.5);
+  glColor3d(0.3, 0.3, 0.3);
   for(int i = 1; i < _gridLinesY + 1; i++)
   {
     glVertex2d(_calc->min(0), _calc->min(1) +
@@ -133,7 +133,7 @@ void PW::_paintAxises()
   glVertex2d(_calc->max(0) - (_calc->max(0) - _calc->min(0)) * 0.05,
              - (_calc->max(1) - _calc->min(1)) * 0.025);
   // y-grid
-  glColor3d(0.5, 0.5, 0.5);
+  glColor3d(0.3, 0.3, 0.3);
   for(int i = 1; i < _gridLinesX + 1; i++)
   {
     glVertex2d(_calc->min(0) + (_calc->max(0) -
@@ -152,7 +152,25 @@ void PW::_paintAxises()
   glVertex2d(0.0, _calc->max(1));
   glVertex2d(- (_calc->max(0) - _calc->min(0)) * 0.025,
              _calc->max(1) - (_calc->max(1) - _calc->min(1)) * 0.05);
-  glEnd();
+  glEnd();  
+  // text
+  glColor3d(0.2, 0.2, 0.2);
+  renderText(- (_calc->max(0) - _calc->min(0)) * 0.025,
+             _calc->max(1) - (_calc->max(1) - _calc->min(1)) * 0.05,
+             0.0, "y");
+  renderText(_calc->max(0) - (_calc->max(0) - _calc->min(0)) * 0.05,
+             - (_calc->max(1) - _calc->min(1)) * 0.025,
+             0.0, "x");
+  for(int i = 1; i < _gridLinesY + 1; i++)
+    renderText(- (_calc->max(0) - _calc->min(0)) * 0.025, _calc->min(1) +
+               (_calc->max(1) - _calc->min(1)) * i / (_gridLinesY + 1),
+               0.0, QString::number(_calc->min(1) + (_calc->max(1) -
+               _calc->min(1)) * i / (_gridLinesY + 1)));
+  for(int i = 1; i < _gridLinesX + 1; i++)
+    renderText(_calc->min(0) + (_calc->max(0) - _calc->min(0)) * i /
+               (_gridLinesX + 1), - (_calc->max(1) - _calc->min(1)) * 0.025,
+               0.0, QString::number(_calc->min(1) + (_calc->max(1) -
+               _calc->min(1)) * i / (_gridLinesY + 1)));
 }
 
 void PW::_paintWay()
@@ -160,7 +178,7 @@ void PW::_paintWay()
   switch(_mw->method())
   {
     case 0: // powell
-      glColor3d(0.0, 0.0, 1.0);
+      glColor3d(1.0, 1.0, 1.0);
       glBegin(GL_LINES);
       for(int i = 0; i < _calc->powell()->nPoints() - 1; i++)
       {
@@ -170,8 +188,26 @@ void PW::_paintWay()
                    _calc->powell()->points(i + 1, 1));
       }
       glEnd();
+      glColor3d(1.0, 1.0, 1.0);
+      for(int i = 0; i < _calc->powell()->nPoints(); i++)
+        renderText(_calc->powell()->points(i, 0),
+                   _calc->powell()->points(i, 1), 0.0, QString::number(i));
       break;
-    case 1:
+    case 1: // fletcher-reeves
+      glColor3d(1.0, 1.0, 1.0);
+      glBegin(GL_LINES);
+      for(int i = 0; i < _calc->fletcherReeves()->nPoints() - 1; i++)
+      {
+        glVertex2d(_calc->fletcherReeves()->points(i, 0),
+                   _calc->fletcherReeves()->points(i, 1));
+        glVertex2d(_calc->fletcherReeves()->points(i + 1, 0),
+                   _calc->fletcherReeves()->points(i + 1, 1));
+      }
+      glEnd();
+      glColor3d(1.0, 1.0, 1.0);
+      for(int i = 0; i < _calc->fletcherReeves()->nPoints(); i++)
+        renderText(_calc->fletcherReeves()->points(i, 0),
+                   _calc->fletcherReeves()->points(i, 1), 0.0, QString::number(i));
       break;
     default:
       break;

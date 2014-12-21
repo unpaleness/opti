@@ -20,7 +20,8 @@ SOURCES += main.cpp\
         simplex.cpp \
     pw.cpp \
     powell.cpp \
-    method.cpp
+    method.cpp \
+    fletcherreeves.cpp
 
 HEADERS += mw.h \
         calc.h \
@@ -28,7 +29,8 @@ HEADERS += mw.h \
         simplex.h \
     pw.h \
     powell.h \
-    method.h
+    method.h \
+    fletcherreeves.h
 
 FORMS += mw.ui \
       gw.ui \

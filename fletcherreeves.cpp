@@ -5,36 +5,36 @@
 
 using namespace std;
 
-#include "powell.h"
+#include "fletcherreeves.h"
 #include "calc.h"
 
-Powell::Powell()
+FletcherReeves::FletcherReeves()
 {
   _nPoints = 1;
-  _points = new double *[POWELL_MAX];
-  for(int i = 0; i < POWELL_MAX; i++)
+  _points = new double *[FLETCHER_MAX];
+  for(int i = 0; i < FLETCHER_MAX; i++)
     _points[i] = new double [3];
 }
 
-Powell::~Powell()
+FletcherReeves::~FletcherReeves()
 {
-  for(int i = 0; i < POWELL_MAX; i++)
+  for(int i = 0; i < FLETCHER_MAX; i++)
     delete [] _points[i];
   delete [] _points;
 }
 
-int Powell::nPoints() { return _nPoints; }
+int FletcherReeves::nPoints() { return _nPoints; }
 
-double Powell::points(int i, int coord) { return _points[i][coord]; }
+double FletcherReeves::points(int i, int coord) { return _points[i][coord]; }
 
-void Powell::init(double *params)
+void FletcherReeves::init(double *params)
 {
   _points[0][0] = params[0];
   _points[0][1] = params[1];
 }
 
 // 1 - minimum, 0 - maximum
-void Powell::count(int extremum)
+void FletcherReeves::count(int extremum)
 {
   ofstream output("powell.log", ios::out);
   output << fixed << setprecision(4);
@@ -48,90 +48,84 @@ void Powell::count(int extremum)
     output << '\n';
   }
   double m = 2.0 * extremum - 1.0;
-  // step 1
-  double **x = _points;
+  output << fixed << setprecision(4);
   int k;
-  double d[3][2] = {{0, 1} , {1, 0} , {0, 1}};
-  double *dNew[3];
-  dNew[0] = new double [2];
-  dNew[1] = new double [2];
-  dNew[2] = new double [2];
-  double y[4][2];
-  y[0][0] = x[0][0];
-  y[0][1] = x[0][1];
-  for(k = 0; k < POWELL_MAX - 1; k++)
+  double _e1;
+  double _e2;
+  double **x;
+  double d[FLETCHER_MAX][2];
+  double grad[FLETCHER_MAX][2];
+  double beta[FLETCHER_MAX];
+  // step 1
+  _e1 = _e;
+  _e2 = _e;
+  x = _points;
+  // step 2
+  for(k = 0;; k++)
   {
     output << "k = " << k << '\n';
-    output << " directions:\n";
-    output << ' ' << setw(W) << d[0][0] << setw(W) << d[1][0] << setw(W) << d[2][0] << '\n';
-    output << ' ' << setw(W) << d[0][1] << setw(W) << d[1][1] << setw(W) << d[2][1] << '\n';
-    output << " y0 = " << setw(W) << y[0][0] << ';' << setw(W) << y[0][1] << '\n';
-    // step 2 and 3
-    _gold(y[1], d[0], y[0], m);
-    output << " y1 = " << setw(W) << y[1][0] << ';' << setw(W) << y[1][1] << '\n';
-    _gold(y[2], d[1], y[1], m);
-    output << " y2 = " << setw(W) << y[2][0] << ';' << setw(W) << y[2][1] << '\n';
-    if(abs(y[2][0] - y[0][0]) < _e && abs(y[2][1] - y[0][1]) < _e)
+    // step 3
+    grad[k][0] = m * _calc->dfdx(x[k][0], x[k][1]);
+    grad[k][1] = m * _calc->dfdy(x[k][0], x[k][1]);
+    output << " x[" << k << "] = (" << setw(W) << x[k][0] << ';'
+         << setw(W) << x[k][1] << ")\n";
+    output << " grad[" << k << "] = (" << setw(W) << grad[k][0] << ';'
+         << setw(W) << grad[k][1] << ")\n";
+    // step14
+    if(sqrt(grad[k][0] * grad[k][0] + grad[k][1] * grad[k][1]) < _e1)
     {
-      output << " going to finish searching: yn = y0\n";
-      x[k + 1][0] = y[2][0];
-      x[k + 1][1] = y[2][1];
+      output << " going to finish searching: ||grad(f(xk))|| < e1\n";
       break;
     }
-    _gold(y[3], d[2], y[2], m);
-    output << " y3 = " << setw(W) << y[3][0] << ';' << setw(W) << y[3][1] << '\n';
-    x[k + 1][0] = y[3][0];
-    x[k + 1][1] = y[3][1];
-    if(abs(y[3][0] - y[1][0]) < _e && abs(y[3][1] - y[1][1]) < _e)
+    // step 5
+    if(k >= FLETCHER_MAX)
     {
-      output << " going to finish searching: yn+1 = y1\n";
+      output << " going to finish searching: k >= M\n";
       break;
     }
-    // step 4
+    if(k == 0)
+    {
+      // step 6
+      d[k][0] = grad[k][0];
+      d[k][1] = grad[k][1];
+    }
+    else
+    {
+      // step 7
+      beta[k - 1] = (grad[k][0] * grad[k][0] + grad[k][1] * grad[k][1]) /
+                    (grad[k - 1][0] * grad[k - 1][0] +
+                    grad[k - 1][1] * grad[k - 1][1]);
+      output << " beta[" << k - 1 << "] = " << setw(W) << beta[k - 1]
+           << '\n';
+      // step 8
+      d[k][0] = - grad[k][0] + beta[k - 1] * d[k - 1][0];
+      d[k][1] = - grad[k][1] + beta[k - 1] * d[k - 1][1];
+    }
+    output << " d[" << k << "] = (" << setw(W) << d[k][0] << ';'
+         << setw(W) << d[k][1] << ")\n";
+    // step 9 and 10
+    _gold(x[k + 1], d[k], x[k], m);
+    // step 11
     if(sqrt((x[k + 1][0] - x[k][0]) * (x[k + 1][0] - x[k][0]) +
-            (x[k + 1][1] - x[k][1]) * (x[k + 1][1] - x[k][1])) < _e)
+       (x[k + 1][1] - x[k][1]) * (x[k + 1][1] - x[k][1])) < _e2 &&
+       abs(m * _calc->f(x[k + 1][0], x[k + 1][1]) - m * _calc->f(x[k][0], x[k][1])) < _e2)
     {
-      output << " going to finish searching: ||xk+1 - xk|| < e\n";
+      output << " going to finish searching: ||x[k+1] - x[k]|| < e2"
+           << " and |f(x[k+1]) - f(x[k])| < e2\n";
       break;
     }
-    dNew[0][0] = y[3][0] - y[1][0];
-    dNew[0][1] = y[3][1] - y[1][1];
-    dNew[1][0] = d[2][0];
-    dNew[1][1] = d[2][1];
-    dNew[2][0] = dNew[0][0];
-    dNew[2][1] = dNew[0][1];
-    if(_rank(dNew) == 2)
-    {
-     output << " directions change\n";
-      for(int j = 0; j < 3; j++)
-        for(int i = 0; i < 2; i++)
-          d[j][i] = dNew[j][i];
-    }
-    y[0][0] = x[k + 1][0];
-    y[0][1] = x[k + 1][1];
   }
-  delete [] dNew[0];
-  delete [] dNew[1];
-  delete [] dNew[2];
+  _nPoints = k + 2;
   _extremum[0] = x[k + 1][0];
   _extremum[1] = x[k + 1][1];
-  output << "Minimum is at x (" << setw(W) << x[k + 1][0] << setw(W) << x[k + 1][1] << ")\n";
-  _nPoints = k + 2;
+  output << "Minimum found at (" << setw(W) << x[k + 1][0] << ';'
+       << setw(W) << x[k + 1][1] << ")\n";
   output.close();
-}
-
-int Powell::_rank(double **d)
-{
-  double m = d[2][1] - d[1][1] * d[1][0] / d[2][0];
-  if(abs(m) > _e)
-    return 2;
-  else
-    return 1;
 }
 
 // minimum with other variable fixed
 // gold section
-void Powell::_gold(double *y, double *d, double *ys, double m)
+void FletcherReeves::_gold(double *y, double *d, double *ys, double m)
 {
   int i;
   double y1[2];
@@ -169,7 +163,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
       y2[1] = _calc->max(1);
       y2[0] = (y2[1] - b) / k;
     }
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < FLETCHER_MAX; i++)
     {
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -198,7 +192,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
     y2[0] = ys[0];
     y1[1] = _calc->min(1);
     y2[1] = _calc->max(1);
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < FLETCHER_MAX; i++)
     {
       // cout << " gold " << i;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -224,7 +218,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
     y2[0] = _calc->max(0);
     y1[1] = ys[1];
     y2[1] = ys[1];
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < FLETCHER_MAX; i++)
     {
       // cout << "  gold " << i;
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;
