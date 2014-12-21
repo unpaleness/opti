@@ -22,7 +22,8 @@ private:
   int _nPoints; // amount of points
   double **_points; // 3D-points of searching way
 
-  double _minimum(int, double, int);
+  int _rank(double **);
+  void _gold(double *, double *, double *, double);
 
 };
 

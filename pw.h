@@ -35,6 +35,9 @@ private:
   MW *_mw;
   GW *_gw;
 
+  int _gridLinesX;
+  int _gridLinesY;
+
   bool _isInitialized; //flag that show that all arrays are initialized
   GLdouble **_pg; //points of graphic
 

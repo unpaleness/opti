@@ -801,12 +801,12 @@
     </property>
     <item>
      <property name="text">
-      <string>Минимум</string>
+      <string>Максимум</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Максимум</string>
+      <string>Минимум</string>
      </property>
     </item>
    </widget>
@@ -1027,7 +1027,7 @@
      <x>0</x>
      <y>0</y>
      <width>467</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

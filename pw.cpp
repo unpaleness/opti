@@ -7,6 +7,8 @@
 PW::PW(QGLWidget *parent) : QGLWidget(parent), _pw(new Ui::PW)
 {
   _isInitialized = false;
+  _gridLinesX = 11;
+  _gridLinesY = 11;
   _pw->setupUi(this);
 }
 
@@ -110,21 +112,40 @@ void PW::_paintPoints()
 void PW::_paintAxises()
 {
   glBegin(GL_LINES);
+  // x-grid
+  glColor3d(0.5, 0.5, 0.5);
+  for(int i = 1; i < _gridLinesY + 1; i++)
+  {
+    glVertex2d(_calc->min(0), _calc->min(1) +
+               (_calc->max(1) - _calc->min(1)) * i / (_gridLinesY + 1));
+    glVertex2d(_calc->max(0), _calc->min(1) +
+               (_calc->max(1) - _calc->min(1)) * i / (_gridLinesY + 1));
+  }
+  // x-axis
   glColor3d(0.0, 0.0, 0.0);
-  //x-axis
   glVertex2d(_calc->min(0), 0.0);
   glVertex2d(_calc->max(0), 0.0);
-  //x-arrow
+  // x-arrow
   glVertex2d(_calc->max(0), 0.0);
   glVertex2d(_calc->max(0) - (_calc->max(0) - _calc->min(0)) * 0.05,
              (_calc->max(1) - _calc->min(1)) * 0.025);
   glVertex2d(_calc->max(0), 0.0);
   glVertex2d(_calc->max(0) - (_calc->max(0) - _calc->min(0)) * 0.05,
              - (_calc->max(1) - _calc->min(1)) * 0.025);
-  //y-axis
+  // y-grid
+  glColor3d(0.5, 0.5, 0.5);
+  for(int i = 1; i < _gridLinesX + 1; i++)
+  {
+    glVertex2d(_calc->min(0) + (_calc->max(0) -
+               _calc->min(0)) * i / (_gridLinesY + 1), _calc->min(1));
+    glVertex2d(_calc->min(0) + (_calc->max(0) -
+               _calc->min(0)) * i / (_gridLinesY + 1), _calc->max(1));
+  }
+  // y-axis
+  glColor3d(0.0, 0.0, 0.0);
   glVertex2d(0.0, _calc->min(1));
   glVertex2d(0.0, _calc->max(1));
-  //y-arrow
+  // y-arrow
   glVertex2d(0.0, _calc->max(1));
   glVertex2d((_calc->max(0) - _calc->min(0)) * 0.025,
              _calc->max(1) - (_calc->max(1) - _calc->min(1)) * 0.05);
@@ -139,7 +160,7 @@ void PW::_paintWay()
   switch(_mw->method())
   {
     case 0: // powell
-      glColor3d(0.0, 0.0, 0.0);
+      glColor3d(0.0, 0.0, 1.0);
       glBegin(GL_LINES);
       for(int i = 0; i < _calc->powell()->nPoints() - 1; i++)
       {
