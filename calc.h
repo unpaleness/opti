@@ -34,10 +34,12 @@ public:
     void countPlot(); // count plot for illustration
     void optimize(int, int); // optimize with seleceted method by min or max
     double *getExtremum(int); // gets extremum with selected method
+    int getNPoints(int); // gets amount of iterations with selected method
     bool isCounted();
     Simplex *simplex();
     Powell *powell();
     FletcherReeves *fletcherReeves();
+    void initMethods(double, int);
     void setMin(int, double);
     void setMax(int, double);
 

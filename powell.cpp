@@ -10,22 +10,11 @@ using namespace std;
 
 Powell::Powell()
 {
-  _nPoints = 1;
-  _points = new double *[POWELL_MAX];
-  for(int i = 0; i < POWELL_MAX; i++)
-    _points[i] = new double [3];
 }
 
 Powell::~Powell()
 {
-  for(int i = 0; i < POWELL_MAX; i++)
-    delete [] _points[i];
-  delete [] _points;
 }
-
-int Powell::nPoints() { return _nPoints; }
-
-double Powell::points(int i, int coord) { return _points[i][coord]; }
 
 void Powell::init(double *params)
 {
@@ -59,7 +48,7 @@ void Powell::count(int extremum)
   double y[4][2];
   y[0][0] = x[0][0];
   y[0][1] = x[0][1];
-  for(k = 0; k < POWELL_MAX - 1; k++)
+  for(k = 0; k < _maxPoints - 1; k++)
   {
     output << "k = " << k << '\n';
     output << " directions:\n";
@@ -169,7 +158,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
       y2[1] = _calc->max(1);
       y2[0] = (y2[1] - b) / k;
     }
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -198,7 +187,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
     y2[0] = ys[0];
     y1[1] = _calc->min(1);
     y2[1] = _calc->max(1);
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       // cout << " gold " << i;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -224,7 +213,7 @@ void Powell::_gold(double *y, double *d, double *ys, double m)
     y2[0] = _calc->max(0);
     y1[1] = ys[1];
     y2[1] = ys[1];
-    for(i = 0; i < POWELL_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       // cout << "  gold " << i;
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;

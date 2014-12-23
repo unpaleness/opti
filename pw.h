@@ -28,6 +28,7 @@ public:
   void setCalc(Calc *);
   void setMainForm(MW *);
   void setGraphicForm(GW *);
+  void doShowIterationNumbers(bool);
 
 private:
   Ui::PW *_pw;
@@ -38,6 +39,7 @@ private:
   int _gridLinesX;
   int _gridLinesY;
 
+  bool _doShowIterationNumbers;
   bool _isInitialized; //flag that show that all arrays are initialized
   GLdouble **_pg; //points of graphic
 

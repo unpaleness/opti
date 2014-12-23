@@ -61,6 +61,16 @@ double Calc::f(double x, double y) { return _fun(0, y, x); }
 double Calc::dfdx(double x, double y) { return _fun(1, y, x); }
 double Calc::dfdy(double x, double y) { return _fun(2, y, x); }
 
+void Calc::initMethods(double e, int maxPoints)
+{
+  _simplex->setAccuracy(e);
+  _fletcherReeves->setAccuracy(e);
+  _powell->setAccuracy(e);
+  _simplex->memAlloc(maxPoints);
+  _fletcherReeves->memAlloc(maxPoints);
+  _powell->memAlloc(maxPoints);
+}
+
 void Calc::countPlot()
 {
   _countPlot();
@@ -80,6 +90,9 @@ void Calc::optimize(int method, int extremum)
       _fletcherReeves->init(_lineEdits);
       _fletcherReeves->count(extremum);
       break;
+    case 2:
+      _simplex->init(_lineEdits);
+      _simplex->count(extremum);
     default:
       break;
   }
@@ -91,14 +104,30 @@ double *Calc::getExtremum(int method)
   {
     case 0:
       return _powell->extremum();
-      break;
     case 1:
       return _fletcherReeves->extremum();
-      break;
+    case 2:
+      return _simplex->extremum();
     default:
       break;
   }
   return nullptr;
+}
+
+int Calc::getNPoints(int method)
+{
+  switch(method)
+  {
+    case 0:
+      return _powell->nPoints();
+    case 1:
+      return _fletcherReeves->nPoints();
+    case 2:
+      return _simplex->nPoints() / 3;
+    default:
+      break;
+  }
+  return 0;
 }
 
 bool Calc::isCounted() { return _isCounted; }

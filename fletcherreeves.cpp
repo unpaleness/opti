@@ -10,22 +10,11 @@ using namespace std;
 
 FletcherReeves::FletcherReeves()
 {
-  _nPoints = 1;
-  _points = new double *[FLETCHER_MAX];
-  for(int i = 0; i < FLETCHER_MAX; i++)
-    _points[i] = new double [3];
 }
 
 FletcherReeves::~FletcherReeves()
 {
-  for(int i = 0; i < FLETCHER_MAX; i++)
-    delete [] _points[i];
-  delete [] _points;
 }
-
-int FletcherReeves::nPoints() { return _nPoints; }
-
-double FletcherReeves::points(int i, int coord) { return _points[i][coord]; }
 
 void FletcherReeves::init(double *params)
 {
@@ -53,9 +42,17 @@ void FletcherReeves::count(int extremum)
   double _e1;
   double _e2;
   double **x;
-  double d[FLETCHER_MAX][2];
-  double grad[FLETCHER_MAX][2];
-  double beta[FLETCHER_MAX];
+  double **d;
+  double **grad;
+  double *beta;
+  d = new double *[_maxPoints];
+  grad = new double *[_maxPoints];
+  beta = new double [_maxPoints];
+  for(int i = 0; i < _maxPoints; i++)
+  {
+    d[i] = new double [2];
+    grad[i] = new double [2];
+  }
   // step 1
   _e1 = _e;
   _e2 = _e;
@@ -78,7 +75,7 @@ void FletcherReeves::count(int extremum)
       break;
     }
     // step 5
-    if(k >= FLETCHER_MAX)
+    if(k >= _maxPoints)
     {
       output << " going to finish searching: k >= M\n";
       break;
@@ -121,6 +118,14 @@ void FletcherReeves::count(int extremum)
   output << "Minimum found at (" << setw(W) << x[k + 1][0] << ';'
        << setw(W) << x[k + 1][1] << ")\n";
   output.close();
+  for(int i = 0; i < _maxPoints; i++)
+  {
+    delete [] d[i];
+    delete [] grad[i];
+  }
+  delete [] d;
+  delete [] grad;
+  delete [] beta;
 }
 
 // minimum with other variable fixed
@@ -163,7 +168,7 @@ void FletcherReeves::_gold(double *y, double *d, double *ys, double m)
       y2[1] = _calc->max(1);
       y2[0] = (y2[1] - b) / k;
     }
-    for(i = 0; i < FLETCHER_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -192,7 +197,7 @@ void FletcherReeves::_gold(double *y, double *d, double *ys, double m)
     y2[0] = ys[0];
     y1[1] = _calc->min(1);
     y2[1] = _calc->max(1);
-    for(i = 0; i < FLETCHER_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       // cout << " gold " << i;
       p1[1] = y1[1] + (3 - sqrt(5)) * (y2[1] - y1[1]) / 2;
@@ -218,7 +223,7 @@ void FletcherReeves::_gold(double *y, double *d, double *ys, double m)
     y2[0] = _calc->max(0);
     y1[1] = ys[1];
     y2[1] = ys[1];
-    for(i = 0; i < FLETCHER_MAX; i++)
+    for(i = 0; i < _maxPoints; i++)
     {
       // cout << "  gold " << i;
       p1[0] = y1[0] + (3 - sqrt(5)) * (y2[0] - y1[0]) / 2;

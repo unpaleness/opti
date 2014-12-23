@@ -107,6 +107,8 @@ int MW::_readParams()
     _calc->setMax(0, _mw->leMaxX->text().toDouble());
     _calc->setMin(1, _mw->leMinY->text().toDouble());
     _calc->setMax(1, _mw->leMaxY->text().toDouble());
+    _calc->initMethods(_mw->leAccuracy->text().toDouble(),
+                       _mw->leIterations->text().toDouble());
     return 0;
 }
 
@@ -198,7 +200,8 @@ void MW::on_pbexec_clicked()
     str += QString::number(_calc->getExtremum(_method)[0]) + ", y* = "
         + QString::number(_calc->getExtremum(_method)[1]) + ": z* = "
         + QString::number(_calc->f(_calc->getExtremum(_method)[0],
-                   _calc->getExtremum(_method)[1]));
+                   _calc->getExtremum(_method)[1])) + " - за "
+        + QString::number(_calc->getNPoints(_method)) + " итераций";
     _mw->lestatus->setText(str);
 //    _mw->lestatus->setText(QString::number(_calc->simplex()->nSimplex()));
 }
@@ -209,6 +212,7 @@ void MW::on_pbgraph_clicked()
   {
     if(_mw->checkBox3D->isChecked())
       _gw->show();
+    _pw->doShowIterationNumbers(_mw->checkBoxIterations->isChecked());
     _pw->show();
     this->setEnabled(false);
   }
