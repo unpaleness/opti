@@ -5,8 +5,6 @@
 
 #include "method.h"
 
-class Calc;
-
 class Simplex : public Method
 {
 public:

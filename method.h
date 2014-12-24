@@ -24,9 +24,11 @@ protected:
 
   double _e;
   double _extremum[2];
-  double _maxPoints;
-  double _nPoints;
+  int _maxPoints;
+  int _nPoints;
   double **_points;
+
+  void _gold(double *, double *, double *, double);
 
 private:
   bool _isInitialized;

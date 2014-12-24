@@ -5,8 +5,6 @@
 
 #define W 7
 
-class Calc;
-
 class Powell : public Method
 {
 public:
@@ -19,7 +17,6 @@ public:
 private:
 
   int _rank(double **);
-  void _gold(double *, double *, double *, double);
 
 };
 

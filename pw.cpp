@@ -9,6 +9,7 @@ PW::PW(QGLWidget *parent) : QGLWidget(parent), _pw(new Ui::PW)
   _isInitialized = false;
   _gridLinesX = 9;
   _gridLinesY = 9;
+  _levelLines = 100;
   _pw->setupUi(this);
 }
 
@@ -16,7 +17,7 @@ PW::~PW()
 {
   if(_isInitialized)
   {
-    for(int i = 0; i < _calc->N2(); i++)
+    for(int i = 0; i < _calc->N2Planar(); i++)
       delete [] _pg[i];
     delete [] _pg;
   }
@@ -27,8 +28,8 @@ void PW::showEvent(QShowEvent *)
 {
   if(!_isInitialized)
   {
-    _pg = new GLdouble *[_calc->N2()];
-    for(int i = 0; i < _calc->N2(); i++)
+    _pg = new GLdouble *[_calc->N2Planar()];
+    for(int i = 0; i < _calc->N2Planar(); i++)
       _pg[i] = new GLdouble [3];
     _isInitialized = true;
   }
@@ -75,12 +76,12 @@ void PW::doShowIterationNumbers(bool b) { _doShowIterationNumbers = b; }
 void PW::_setPoints()
 {
   int k = 0;
-  for(int j = 0; j < _calc->N(); j++)
-    for(int i = 0; i < _calc->N(); i++)
+  for(int j = 0; j < _calc->NPlanar(); j++)
+    for(int i = 0; i < _calc->NPlanar(); i++)
     {
-      _pg[k][0] = _calc->x()[i];
-      _pg[k][1] = _calc->y()[j];
-      _pg[k][2] = _calc->z()[j][i];
+      _pg[k][0] = _calc->xP()[i];
+      _pg[k][1] = _calc->yP()[j];
+      _pg[k][2] = _calc->zP()[j][i];
       k++;
     }
 }
@@ -91,10 +92,14 @@ void PW::_paintPoints()
   GLdouble zRange = _calc->max(2) - _calc->min(2);
   GLdouble zMin = _calc->min(2);
   GLdouble zMax = _calc->max(2);
-  for(int i = 0; i < _calc->N2(); i++)
+  for(int i = 0; i < _calc->N2Planar(); i++)
   {
-    glColor3d((_pg[i][2] - zMin) / zRange * 0.7,
-              (zMax - _pg[i][2]) / zRange * 0.7, 0.0);
+    if(int((_pg[i][2] - zMin) / zRange * _levelLines) % 2)
+      glColor3d((_pg[i][2] - zMin) / zRange * 0.7,
+                (zMax - _pg[i][2]) / zRange * 0.7, 0.0);
+    else
+      glColor3d((zMax - _pg[i][2]) / zRange * 0.7, 0.0,
+                (_pg[i][2] - zMin) / zRange * 0.7);
 //    glVertex3dv(_pg[i]);
     glVertex2d(_pg[i][0] - _calc->step(0) / 2.0,
                _pg[i][1] - _calc->step(1) / 2.0);
@@ -174,76 +179,97 @@ void PW::_paintAxises()
 
 void PW::_paintWay()
 {
+  GLdouble colorLines[3] = {1.0, 0.0, 1.0};
+  GLdouble colorText[3] = {1.0, 0.0, 1.0};
   switch(_mw->method())
   {
     case 0: // powell
-      glColor3d(1.0, 1.0, 1.0);
+      glColor3dv(colorLines);
       glBegin(GL_LINES);
-      for(int i = 0; i < _calc->powell()->nPoints() - 1; i++)
+      for(int i = 0; i < _calc->method(0)->nPoints() - 1; i++)
       {
-        glVertex2d(_calc->powell()->points(i, 0),
-                   _calc->powell()->points(i, 1));
-        glVertex2d(_calc->powell()->points(i + 1, 0),
-                   _calc->powell()->points(i + 1, 1));
+        glVertex2d(_calc->method(0)->points(i, 0),
+                   _calc->method(0)->points(i, 1));
+        glVertex2d(_calc->method(0)->points(i + 1, 0),
+                   _calc->method(0)->points(i + 1, 1));
       }
       glEnd();
       if(_doShowIterationNumbers)
       {
-        glColor3d(1.0, 1.0, 1.0);
-        for(int i = 0; i < _calc->powell()->nPoints(); i++)
-          renderText(_calc->powell()->points(i, 0),
-                     _calc->powell()->points(i, 1), 0.0, QString::number(i));
+        glColor3dv(colorText);
+        for(int i = 0; i < _calc->method(0)->nPoints(); i++)
+          renderText(_calc->method(0)->points(i, 0),
+                     _calc->method(0)->points(i, 1), 0.0, QString::number(i));
       }
       break;
     case 1: // fletcher-reeves
-      glColor3d(1.0, 1.0, 1.0);
+      glColor3dv(colorLines);
       glBegin(GL_LINES);
-      for(int i = 0; i < _calc->fletcherReeves()->nPoints() - 1; i++)
+      for(int i = 0; i < _calc->method(1)->nPoints() - 1; i++)
       {
-        glVertex2d(_calc->fletcherReeves()->points(i, 0),
-                   _calc->fletcherReeves()->points(i, 1));
-        glVertex2d(_calc->fletcherReeves()->points(i + 1, 0),
-                   _calc->fletcherReeves()->points(i + 1, 1));
+        glVertex2d(_calc->method(1)->points(i, 0),
+                   _calc->method(1)->points(i, 1));
+        glVertex2d(_calc->method(1)->points(i + 1, 0),
+                   _calc->method(1)->points(i + 1, 1));
       }
       glEnd();
       if(_doShowIterationNumbers)
       {
-        glColor3d(1.0, 1.0, 1.0);
-        for(int i = 0; i < _calc->fletcherReeves()->nPoints(); i++)
-          renderText(_calc->fletcherReeves()->points(i, 0),
-                     _calc->fletcherReeves()->points(i, 1), 0.0, QString::number(i));
+        glColor3dv(colorText);
+        for(int i = 0; i < _calc->method(1)->nPoints(); i++)
+          renderText(_calc->method(1)->points(i, 0),
+                     _calc->method(1)->points(i, 1), 0.0, QString::number(i));
       }
       break;
     case 2: // nelder-mid
-      glColor3d(1.0, 1.0, 1.0);
+      glColor3dv(colorLines);
       glBegin(GL_LINES);
-      for(int i = 0; i < _calc->simplex()->nPoints() - 4; i += 3)
+      for(int i = 0; i < _calc->method(2)->nPoints() - 4; i += 3)
       {
-        glVertex2d(_calc->simplex()->points(i, 0),
-                   _calc->simplex()->points(i, 1));
-        glVertex2d(_calc->simplex()->points(i + 1, 0),
-                   _calc->simplex()->points(i + 1, 1));
-        glVertex2d(_calc->simplex()->points(i + 1, 0),
-                   _calc->simplex()->points(i + 1, 1));
-        glVertex2d(_calc->simplex()->points(i + 2, 0),
-                   _calc->simplex()->points(i + 2, 1));
-        glVertex2d(_calc->simplex()->points(i + 2, 0),
-                   _calc->simplex()->points(i + 2, 1));
-        glVertex2d(_calc->simplex()->points(i, 0),
-                   _calc->simplex()->points(i, 1));
+        glVertex2d(_calc->method(2)->points(i, 0),
+                   _calc->method(2)->points(i, 1));
+        glVertex2d(_calc->method(2)->points(i + 1, 0),
+                   _calc->method(2)->points(i + 1, 1));
+        glVertex2d(_calc->method(2)->points(i + 1, 0),
+                   _calc->method(2)->points(i + 1, 1));
+        glVertex2d(_calc->method(2)->points(i + 2, 0),
+                   _calc->method(2)->points(i + 2, 1));
+        glVertex2d(_calc->method(2)->points(i + 2, 0),
+                   _calc->method(2)->points(i + 2, 1));
+        glVertex2d(_calc->method(2)->points(i, 0),
+                   _calc->method(2)->points(i, 1));
       }
       glEnd();
       if(_doShowIterationNumbers)
       {
-        glColor3d(1.0, 1.0, 1.0);
-        for(int i = 0; i < _calc->simplex()->nPoints() - 4; i += 3)
-          renderText((_calc->simplex()->points(i, 0)
-                      + _calc->simplex()->points(i + 1, 0)
-                      + _calc->simplex()->points(i + 2, 0)) / 3,
-                     (_calc->simplex()->points(i, 1)
-                      + _calc->simplex()->points(i + 1, 1)
-                      + _calc->simplex()->points(i + 2, 1)) / 3,
+        glColor3dv(colorText);
+        for(int i = 0; i < _calc->method(2)->nPoints() - 4; i += 3)
+          renderText((_calc->method(2)->points(i, 0)
+                      + _calc->method(2)->points(i + 1, 0)
+                      + _calc->method(2)->points(i + 2, 0)) / 3,
+                     (_calc->method(2)->points(i, 1)
+                      + _calc->method(2)->points(i + 1, 1)
+                      + _calc->method(2)->points(i + 2, 1)) / 3,
                      0.0, QString::number(i / 3));
+      }
+      break;
+    case 3: // gradient descent
+      glColor3dv(colorLines);
+      glBegin(GL_LINES);
+      for(int i = 0; i < _calc->method(3)->nPoints() - 1; i++)
+      {
+        glVertex2d(_calc->method(3)->points(i, 0),
+                   _calc->method(3)->points(i, 1));
+        glVertex2d(_calc->method(3)->points(i + 1, 0),
+                   _calc->method(3)->points(i + 1, 1));
+      }
+      glEnd();
+      if(_doShowIterationNumbers)
+      {
+        glColor3dv(colorText);
+        for(int i = 0; i < _calc->method(3)->nPoints(); i++)
+          renderText(_calc->method(3)->points(i, 0),
+                     _calc->method(3)->points(i, 1), 0.0, QString::number(i));
       }
       break;
     default:

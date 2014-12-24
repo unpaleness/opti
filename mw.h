@@ -27,7 +27,7 @@ public:
 private slots:
     void on_pbexec_clicked();
     void on_pbgraph_clicked();
-    void on_cbMethod_currentIndexChanged(int index);
+    void on_cbMethod_currentIndexChanged(int);
 
 private:
     Ui::MW *_mw; //main form

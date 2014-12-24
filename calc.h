@@ -6,9 +6,11 @@
 #include "simplex.h"
 #include "powell.h"
 #include "fletcherreeves.h"
+#include "gradientdescent.h"
 
 #define CALC_FUNCTIONS 3
 #define CALC_MEMBERS 6
+#define CALC_METHODS 4
 
 //class Simplex;
 
@@ -25,20 +27,26 @@ public:
     double *x();
     double *y();
     double **z();
+    double *xP();
+    double *yP();
+    double **zP();
     double z(double, double);
     double max(int);
     double min(int);
     double step(int);
     int N();
     int N2();
+    int NPlanar();
+    int N2Planar();
     void countPlot(); // count plot for illustration
     void optimize(int, int); // optimize with seleceted method by min or max
     double *getExtremum(int); // gets extremum with selected method
     int getNPoints(int); // gets amount of iterations with selected method
     bool isCounted();
-    Simplex *simplex();
-    Powell *powell();
-    FletcherReeves *fletcherReeves();
+    Method *method(int);
+//    Simplex *simplex();
+//    Powell *powell();
+//    FletcherReeves *fletcherReeves();
     void initMethods(double, int);
     void setMin(int, double);
     void setMax(int, double);
@@ -48,12 +56,14 @@ public:
     double dfdy(double, double);
 
 private:
-    Simplex *_simplex; //simplex-method object
-    Powell *_powell; //powell-method object
-    FletcherReeves *_fletcherReeves;
+    Method *_methods[CALC_METHODS];
+//    Simplex *_simplex; //simplex-method object
+//    Powell *_powell; //powell-method object
+//    FletcherReeves *_fletcherReeves;
 
     bool _isCounted;
     int _N; //points on axises
+    int _NPlanar; //point to planar graph
     double **_a; //coefficients
     double **_powx; //x powers
     double **_powy; //y powers
@@ -64,6 +74,9 @@ private:
     double *_axis_x; //values on axis x
     double *_axis_y; //values on axis y
     double ** _z_plot; //values of function to plot
+    double *_xPlanar;
+    double *_yPlanar;
+    double **_zPlanar;
 
     void _initialize(); //initialize plotting arrays
     void _eraseinitialization(); //erase memory after plotting arrays

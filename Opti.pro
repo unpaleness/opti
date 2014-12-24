@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     pw.cpp \
     powell.cpp \
     method.cpp \
-    fletcherreeves.cpp
+    fletcherreeves.cpp \
+    gradientdescent.cpp
 
 HEADERS += mw.h \
         calc.h \
@@ -30,7 +31,8 @@ HEADERS += mw.h \
     pw.h \
     powell.h \
     method.h \
-    fletcherreeves.h
+    fletcherreeves.h \
+    gradientdescent.h
 
 FORMS += mw.ui \
       gw.ui \

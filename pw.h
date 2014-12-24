@@ -38,6 +38,7 @@ private:
 
   int _gridLinesX;
   int _gridLinesY;
+  int _levelLines;
 
   bool _doShowIterationNumbers;
   bool _isInitialized; //flag that show that all arrays are initialized

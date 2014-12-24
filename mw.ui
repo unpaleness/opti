@@ -321,6 +321,11 @@
       <string>Нелдера-Мида (симплексный)</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Градиентного спуска</string>
+     </property>
+    </item>
    </widget>
    <widget class="QLabel" name="lMethod">
     <property name="geometry">
